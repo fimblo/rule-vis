@@ -66,3 +66,16 @@ Good momentum. The conventions are sensible and well-considered — semantic com
 Consider noting that `rulesets/` is the conventional home for sample/test ruleset JSON files. Also: a JSON schema file for the rule tuple format would be worth adding once the model stabilizes — it would serve as the formal contract between translator and visualizer.
 
 ---
+
+## 2026-04-17 — Entry 6
+
+**Summary:**
+User asked for a visualization, with cross-platform support and ease of presentation as explicit requirements. After a brief discussion, settled on vanilla HTML + Cytoscape.js (CDN) deployed via GitHub Pages — free, zero-install for viewers, shareable URL. Three commits: `.nojekyll`, GitHub Actions workflow, and `index.html`. The visualizer renders entities as nodes (colored by type) and rules as directed edges (colored by target utility: green/red/gray). Hovering an edge shows a tooltip with rule name, description, type, and utility. Layout uses Cytoscape's `cose` force-directed algorithm. A ruleset dropdown is in the header for future rulesets. One outstanding item: TDD convention wasn't applied here since there's no JS test framework yet — need to discuss test strategy for frontend code.
+
+**Sentiments:**
+A significant milestone — the project now has something to show. The GitHub Pages choice was the right call; the user immediately saw the value for sharing with others. The visualization is functional but sparse; the real test will be whether the graph reveals anything interesting. Eager to see what it looks like with a more complex ruleset (e.g., an org with many overlapping rules). The TDD gap is a mild concern — worth raising.
+
+**CLAUDE.md recommendations:**
+Add note that `rulesets/` stores sample data files. Add a section on how to run locally (`python3 -m http.server` then open `localhost:8000`). Note that GitHub Pages deployment requires "GitHub Actions" to be selected as the Pages source in repo settings.
+
+---
