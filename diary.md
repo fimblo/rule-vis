@@ -336,3 +336,16 @@ The reduction is dramatic — werewolf.json lost 73% of its rule entries, purely
 
 **CLAUDE.md recommendations:**
 None this turn.
+
+---
+
+## 2026-04-17 — Entry 27
+
+**Summary:**
+Two tasks this turn. (1) Fixed README — the "Working with Claude Code" section implied a human should write diary entries; now clarified that Claude does this automatically, and that commits are also Claude's job. (2) Implemented temporal phase filtering (schema v0.5.0). Rulesets may declare an ordered `"phases"` array (e.g. `["night", "day"]` or `["Q1", "Q2", "Q3", "Q4"]`); individual rules carry an optional `"phase"` field. The visualizer shows a slider below the header when phases are defined; dragging it dims all edges whose rule belongs to a different phase (opacity 0.04). Rules with no phase are always visible — they represent always-on constraints like secrecy or win conditions. Demonstrated with werewolf.json: night = eliminate/inspect/protect, day = vote/elimination. The phase bar is hidden entirely for rulesets without phases defined.
+
+**Sentiments:**
+The binary approach (active/dimmed) is clean and legible. The design deliberately avoids per-phase utility mutation — if utility changes by phase you write two rules. This keeps the mental model consistent with what already exists. The slider is a natural fit: it's ordered, scrubable, and scales to quarterly/annual organizational timelines without any structural changes. The werewolf demo is satisfying — the night-vs-day split makes the two distinct "modes" of the game immediately visible in the graph.
+
+**CLAUDE.md recommendations:**
+None this turn.
