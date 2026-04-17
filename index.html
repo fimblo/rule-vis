@@ -480,19 +480,41 @@
     });
 
     layout.on('layoutstop', () => {
-      const nets = cy.nodes().map(n => n.data('netUtility'));
-      const minNet = Math.min(...nets);
-      const maxNet = Math.max(...nets);
-      const range = maxNet - minNet;
-      if (range > 0) {
-        const h = cy.height();
-        const pad = 80;
-        cy.nodes().forEach(node => {
-          const t = (maxNet - node.data('netUtility')) / range;
-          node.position('y', pad + t * (h - 2 * pad));
+      const w = cy.width();
+      const h = cy.height();
+      const padX = 120;
+      const padY = 80;
+
+      // Group nodes by net utility level
+      const groups = new Map();
+      cy.nodes().forEach(node => {
+        const net = node.data('netUtility');
+        if (!groups.has(net)) groups.set(net, []);
+        groups.get(net).push(node);
+      });
+
+      // Sort levels descending: high utility = top of canvas
+      const levels = [...groups.keys()].sort((a, b) => b - a);
+      const numLevels = levels.length;
+
+      levels.forEach((level, levelIdx) => {
+        const nodes = groups.get(level);
+        // Preserve cose horizontal ordering within each level
+        nodes.sort((a, b) => a.position('x') - b.position('x'));
+
+        const y = numLevels === 1
+          ? h / 2
+          : padY + (levelIdx / (numLevels - 1)) * (h - 2 * padY);
+
+        nodes.forEach((node, nodeIdx) => {
+          const x = nodes.length === 1
+            ? w / 2
+            : padX + (nodeIdx / (nodes.length - 1)) * (w - 2 * padX);
+          node.position({ x, y });
         });
-        cy.fit(cy.elements(), 80);
-      }
+      });
+
+      cy.fit(cy.elements(), 80);
     });
 
     layout.run();
