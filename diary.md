@@ -144,3 +144,16 @@ Clean interaction, implemented tidily. Muting is exactly the right primitive for
 None this turn.
 
 ---
+
+## 2026-04-17 — Entry 12
+
+**Summary:**
+Added Werewolf as a second, richer ruleset. 5 players (Werewolf, Seer, Doctor, Villager A, Villager B) + Moderator + Village Vote entity. 32 rules covering: role secrecy, night elimination (werewolf → each non-werewolf via object_entity), seer inspection (asymmetric: inspecting werewolf is -1 for them, others 0), doctor protection (all +1, including unknowingly protecting the werewolf), day voting (all players funnel through Village Vote game_component), and win conditions per faction. Added optional `faction` field to entities (werewolf vs village). Village Vote acts as a shared bottleneck resource — exactly the kind of shared passive object discussed in entry 9.
+
+**Sentiments:**
+This ruleset is where the model starts to feel genuinely interesting. The doctor-protects-werewolf rule (positive object_utility for a player who is your adversary) creates a surprising edge that you wouldn't notice reading the rules. The Village Vote as shared resource mirrors the org bottleneck pattern. Eager to see it visualized.
+
+**CLAUDE.md recommendations:**
+The `faction` field on entities is worth documenting in CLAUDE.md — it's now in the wild even if the visualizer doesn't use it yet.
+
+---
