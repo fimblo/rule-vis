@@ -66,10 +66,13 @@
     #tooltip .tt-name  { font-weight: 600; margin-bottom: 4px; }
     #tooltip .tt-desc  { color: #d1d5db; margin-bottom: 6px; }
     #tooltip .tt-meta  { color: #9ca3af; font-size: 0.75rem; }
-    #tooltip .tt-util  { display: inline-block; padding: 1px 6px; border-radius: 3px; font-weight: 600; }
-    #tooltip .pos { background: #14532d; color: #86efac; }
-    #tooltip .neg { background: #7f1d1d; color: #fca5a5; }
-    #tooltip .neu { background: #374151; color: #9ca3af; }
+    #tt-utilities { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; }
+    .tt-util-row  { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 0.75rem; }
+    .tt-util-label { color: #9ca3af; }
+    .tt-util-badge { display: inline-block; padding: 1px 6px; border-radius: 3px; font-weight: 600; font-size: 0.75rem; }
+    .pos { background: #14532d; color: #86efac; }
+    .neg { background: #7f1d1d; color: #fca5a5; }
+    .neu { background: #374151; color: #9ca3af; }
 
     #legend {
       position: fixed;
@@ -103,10 +106,8 @@
 <div id="tooltip" hidden>
   <div class="tt-name" id="tt-name"></div>
   <div class="tt-desc" id="tt-desc"></div>
-  <div class="tt-meta">
-    type: <span id="tt-type"></span> &nbsp;|&nbsp;
-    utility: <span class="tt-util" id="tt-util"></span>
-  </div>
+  <div class="tt-meta">type: <span id="tt-type"></span></div>
+  <div id="tt-utilities"></div>
 </div>
 
 <div id="legend">
@@ -151,26 +152,28 @@
   }
 
   function buildElements(data) {
+    const nameOf = Object.fromEntries(data.entities.map(e => [e.id, e.name]));
+
     const nodes = data.entities.map(e => ({
-      data: {
-        id:    e.id,
-        label: e.name,
-        type:  e.type,
-        color: nodeColor(e.type),
-      }
+      data: { id: e.id, label: e.name, type: e.type, color: nodeColor(e.type) }
     }));
 
     const governEdges = data.rules.map(r => ({
       data: {
-        id:            r.id,
-        source:        r.source_entity,
-        target:        r.target_entity,
-        rule_name:     r.rule_name,
-        rule_type:     r.rule_type,
-        description:   r.description,
-        targetUtility: r.target_utility,
-        color:         edgeColor(r.target_utility),
-        edgeKind:      'governs',
+        id:               r.id,
+        source:           r.source_entity,
+        target:           r.target_entity,
+        rule_name:        r.rule_name,
+        rule_type:        r.rule_type,
+        description:      r.description,
+        color:            edgeColor(r.target_utility),
+        edgeKind:         'governs',
+        sourceName:       nameOf[r.source_entity],
+        targetName:       nameOf[r.target_entity],
+        sourceUtility:    r.source_utility,
+        targetUtility:    r.target_utility,
+        objectName:       r.object_entity ? nameOf[r.object_entity] : null,
+        objectUtility:    r.object_utility ?? null,
       }
     }));
 
@@ -178,15 +181,20 @@
       .filter(r => r.object_entity != null)
       .map(r => ({
         data: {
-          id:            `${r.id}-obj`,
-          source:        r.target_entity,
-          target:        r.object_entity,
-          rule_name:     r.rule_name,
-          rule_type:     r.rule_type,
-          description:   r.description,
-          targetUtility: r.object_utility,
-          color:         edgeColor(r.object_utility),
-          edgeKind:      'acts-on',
+          id:               `${r.id}-obj`,
+          source:           r.target_entity,
+          target:           r.object_entity,
+          rule_name:        r.rule_name,
+          rule_type:        r.rule_type,
+          description:      r.description,
+          color:            edgeColor(r.object_utility),
+          edgeKind:         'acts-on',
+          sourceName:       nameOf[r.source_entity],
+          targetName:       nameOf[r.target_entity],
+          sourceUtility:    r.source_utility,
+          targetUtility:    r.target_utility,
+          objectName:       nameOf[r.object_entity],
+          objectUtility:    r.object_utility,
         }
       }));
 
@@ -194,18 +202,35 @@
   }
 
   let cy = null;
-  const tooltip  = document.getElementById('tooltip');
-  const ttName   = document.getElementById('tt-name');
-  const ttDesc   = document.getElementById('tt-desc');
-  const ttType   = document.getElementById('tt-type');
-  const ttUtil   = document.getElementById('tt-util');
+  const tooltip     = document.getElementById('tooltip');
+  const ttName      = document.getElementById('tt-name');
+  const ttDesc      = document.getElementById('tt-desc');
+  const ttType      = document.getElementById('tt-type');
+  const ttUtilities = document.getElementById('tt-utilities');
+
+  function fmtUtil(u) {
+    return u > 0 ? `+${u}` : `${u}`;
+  }
+
+  function utilRow(label, utility) {
+    return `<div class="tt-util-row">
+      <span class="tt-util-label">${label}</span>
+      <span class="tt-util-badge ${utilClass(utility)}">${fmtUtil(utility)}</span>
+    </div>`;
+  }
 
   function showTooltip(evt, data) {
     ttName.textContent = data.rule_name;
     ttDesc.textContent = data.description || '';
     ttType.textContent = data.rule_type;
-    ttUtil.textContent = data.targetUtility > 0 ? `+${data.targetUtility}` : data.targetUtility;
-    ttUtil.className   = `tt-util ${utilClass(data.targetUtility)}`;
+
+    let rows = utilRow(data.sourceName, data.sourceUtility)
+             + utilRow(data.targetName, data.targetUtility);
+    if (data.objectName != null) {
+      rows += utilRow(data.objectName, data.objectUtility);
+    }
+    ttUtilities.innerHTML = rows;
+
     positionTooltip(evt.originalEvent);
     tooltip.hidden = false;
   }
