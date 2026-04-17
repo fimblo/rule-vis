@@ -375,3 +375,16 @@ The Munchkin refactor is the more satisfying half of this commit. 52 → 15 rule
 
 **CLAUDE.md recommendations:**
 None this turn.
+
+---
+
+## 2026-04-17 — Entry 30
+
+**Summary:**
+Modelled the first organisational ruleset: a Teal/Holacracy-inspired self-managing engineering org. Key schema insight: entity `type` was already an open string, so no structural schema change was needed — just new color entries in `NODE_COLORS` (`authority`, `team`, `role`, `process`) and making the legend rebuild dynamically from the loaded data rather than being hardcoded HTML. The org ruleset has 16 entities across 5 types (authority, team, group, process), cohorts `eng_teams` and `all_teams`, and 5 temporal phases (weekly/biweekly/monthly/quarterly/yearly). 20 logical rules cover: advice model, consent vs majority decision-making, all engineering ceremonies, OKR planning with max-2-objective constraint, monthly reporting to shareholders, and yearly elections with rotating tenure. Utility values reflect autonomy (positive) vs overhead obligations (negative). Added to the game selector as "Teal Engineering Org".
+
+**Sentiments:**
+The first real org model landed well. The phase slider is genuinely useful here — sliding from weekly to yearly shows how the rule landscape changes cadence. The Teal model maps cleanly onto the existing rule types: advice model = obligation, consent blocking = permission, tenure constraint = prohibition. The distinction between `shareholders` and `all_teams` (same people, different role) is an interesting modeling decision — it means the graph has edges between these two entities representing the ownership relationship.
+
+**CLAUDE.md recommendations:**
+None this turn.
