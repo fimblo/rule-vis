@@ -158,6 +158,19 @@ None this turn.
 
 ---
 
+## 2026-04-17 — Entry 17
+
+**Summary:**
+User couldn't tell pinned from normal when hovering, because both show a white border (hover-highlight overrides pinned's border styling). Fix: store `baseLabel` in node data at build time, and update the `label` field dynamically on click — appending ` 📌` for pinned, restoring the base for muted/normal. Label content is independent of hover styling so the pin icon is always visible regardless of interaction state.
+
+**Sentiments:**
+Simple fix, right tool for the job. The label approach beats a background-color change (which would lose entity-type color) and beats a background-image SVG (overkill). The emoji is universally recognizable. Muted state doesn't need an icon — the gray+dim is already visually unambiguous.
+
+**CLAUDE.md recommendations:**
+None this turn.
+
+---
+
 ## 2026-04-17 — Entry 16
 
 **Summary:**
