@@ -175,16 +175,16 @@
   function buildElements(data) {
     const nameOf = Object.fromEntries(data.entities.map(e => [e.id, e.name]));
 
-    const netAsTarget = {};
-    const netAsObject = {};
-    data.entities.forEach(e => { netAsTarget[e.id] = 0; netAsObject[e.id] = 0; });
+    const netAsSubject = {};
+    const netAsAffected = {};
+    data.entities.forEach(e => { netAsSubject[e.id] = 0; netAsAffected[e.id] = 0; });
     data.rules.forEach(r => {
-      netAsTarget[r.target_entity] += r.target_utility;
-      if (r.object_entity != null) netAsObject[r.object_entity] += (r.object_utility ?? 0);
+      netAsSubject[r.subject_entity] += r.subject_utility;
+      if (r.affected_entity != null) netAsAffected[r.affected_entity] += (r.affected_utility ?? 0);
     });
 
     const nodes = data.entities.map(e => {
-      const net = (netAsTarget[e.id] ?? 0) + (netAsObject[e.id] ?? 0);
+      const net = (netAsSubject[e.id] ?? 0) + (netAsAffected[e.id] ?? 0);
       const baseLabel = `${e.name}\n(${net > 0 ? '+' : ''}${net})`;
       return {
         data: {
@@ -196,8 +196,8 @@
           color:        nodeColor(e.type),
           borderColor:  net > 0 ? '#4ade80' : net < 0 ? '#f87171' : '#6b7280',
           netUtility:   net,
-          netAsTarget:  netAsTarget[e.id],
-          netAsObject:  netAsObject[e.id],
+          netAsSubject:  netAsSubject[e.id],
+          netAsAffected:  netAsAffected[e.id],
         }
       };
     });
@@ -205,40 +205,40 @@
     const governEdges = data.rules.map(r => ({
       data: {
         id:               r.id,
-        source:           r.source_entity,
-        target:           r.target_entity,
+        source:           r.authority_entity,
+        target:           r.subject_entity,
         rule_name:        r.rule_name,
         rule_type:        r.rule_type,
         description:      r.description,
-        color:            edgeColor(r.target_utility),
+        color:            edgeColor(r.subject_utility),
         edgeKind:         'governs',
-        sourceName:       nameOf[r.source_entity],
-        targetName:       nameOf[r.target_entity],
-        sourceUtility:    r.source_utility,
-        targetUtility:    r.target_utility,
-        objectName:       r.object_entity ? nameOf[r.object_entity] : null,
-        objectUtility:    r.object_utility ?? null,
+        authorityName:       nameOf[r.authority_entity],
+        subjectName:       nameOf[r.subject_entity],
+        authorityUtility:    r.authority_utility,
+        subjectUtility:    r.subject_utility,
+        affectedName:       r.affected_entity ? nameOf[r.affected_entity] : null,
+        affectedUtility:    r.affected_utility ?? null,
       }
     }));
 
     const actsOnEdges = data.rules
-      .filter(r => r.object_entity != null)
+      .filter(r => r.affected_entity != null)
       .map(r => ({
         data: {
           id:               `${r.id}-obj`,
-          source:           r.target_entity,
-          target:           r.object_entity,
+          source:           r.subject_entity,
+          target:           r.affected_entity,
           rule_name:        r.rule_name,
           rule_type:        r.rule_type,
           description:      r.description,
-          color:            edgeColor(r.object_utility),
+          color:            edgeColor(r.affected_utility),
           edgeKind:         'acts-on',
-          sourceName:       nameOf[r.source_entity],
-          targetName:       nameOf[r.target_entity],
-          sourceUtility:    r.source_utility,
-          targetUtility:    r.target_utility,
-          objectName:       nameOf[r.object_entity],
-          objectUtility:    r.object_utility,
+          authorityName:       nameOf[r.authority_entity],
+          subjectName:       nameOf[r.subject_entity],
+          authorityUtility:    r.authority_utility,
+          subjectUtility:    r.subject_utility,
+          affectedName:       nameOf[r.affected_entity],
+          affectedUtility:    r.affected_utility,
         }
       }));
 
@@ -275,8 +275,8 @@
     ttDesc.textContent = '';
     ttType.textContent = d.type;
     let rows = utilRow('net utility', d.netUtility);
-    if (d.netAsTarget !== 0) rows += utilRow('as governed', d.netAsTarget);
-    if (d.netAsObject !== 0) rows += utilRow('as object',   d.netAsObject);
+    if (d.netAsSubject !== 0) rows += utilRow('as subject', d.netAsSubject);
+    if (d.netAsAffected !== 0) rows += utilRow('as affected',   d.netAsAffected);
     ttUtilities.innerHTML = rows;
     positionTooltip(evt.originalEvent);
     tooltip.hidden = false;
@@ -287,10 +287,10 @@
     ttDesc.textContent = data.description || '';
     ttType.textContent = data.rule_type;
 
-    let rows = utilRow(data.sourceName, data.sourceUtility)
-             + utilRow(data.targetName, data.targetUtility);
-    if (data.objectName != null) {
-      rows += utilRow(data.objectName, data.objectUtility);
+    let rows = utilRow(data.authorityName, data.authorityUtility)
+             + utilRow(data.subjectName, data.subjectUtility);
+    if (data.affectedName != null) {
+      rows += utilRow(data.affectedName, data.affectedUtility);
     }
     ttUtilities.innerHTML = rows;
 
