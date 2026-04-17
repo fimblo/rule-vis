@@ -105,3 +105,16 @@ Good correction — my earlier wording was too prescriptive. The user's intent i
 None — just applied a correction.
 
 ---
+
+## 2026-04-17 — Entry 9
+
+**Summary:**
+User noticed the Board node was isolated in the visualization and asked why it wasn't the target of placement rules. This led to a productive discussion about a gap in the data model: `target_entity` conflated the *governed entity* (who must comply) with the *object of the action* (what is acted upon). The user extended the insight to real org examples — Google spreadsheets as bottlenecks, prod environments with rate limits or dollar costs. Agreed on Option A: add optional `object_entity` and `object_utility` fields. Implemented across three commits: schema v0.2.0 in the JSON (10 rules gained object fields), dashed "acts-on" edges in the visualizer, and CLAUDE.md updated. The Board is now wired into the graph.
+
+**Sentiments:**
+This was the best conversation so far. The user immediately saw the real-world parallel — passive shared resources as bottlenecks — which validates that the model has genuine organizational utility beyond games. The Board being isolated was a bug that revealed a model limitation; that's exactly the kind of thing a working prototype surfaces. Very satisfied with where this ended up.
+
+**CLAUDE.md recommendations:**
+None this turn — all updates applied.
+
+---
