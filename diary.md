@@ -284,3 +284,16 @@ A textbook coordinate-space bug. The fix is clean once the root cause is identif
 **CLAUDE.md recommendations:**
 None this turn.
 
+
+---
+
+## 2026-04-17 — Entry 23
+
+**Summary:**
+Implemented ruleset description hover tooltip and rewrote all three JSON ruleset descriptions with markdown formatting. Added marked.js (CDN, v9.1.6) to index.html to render markdown in the browser. Added `#ruleset-desc` panel (fixed position, top-right below header, dark background, markdown-aware CSS styles for h2/p/ul/strong/em). The `#ruleset-name` span in the header now shows a dotted underline and `cursor: help` to signal interactivity. On mouseenter, the panel appears with the description rendered as HTML; on mouseleave it hides. The `render()` function now calls `marked.parse(desc)` and injects into the panel on each ruleset load. Rewrote all three `ruleset.description` fields: Tic-Tac-Toe, Werewolf, and Munchkin now have h2 headings, bold labels, bullet lists, and italic role names. No inline styles — all formatting handled via CSS classes on the panel container.
+
+**Sentiments:**
+Hover-on-name is a clean UX pattern for contextual help — it doesn't compete with the main canvas and is discoverable via the dotted underline hint. The markdown descriptions are meaningfully better than the flat text: they communicate factions, mechanics, and goals at a glance. Using marked.js is the right call here — rolling a custom renderer would have been overengineering for structured game descriptions.
+
+**CLAUDE.md recommendations:**
+None this turn.
