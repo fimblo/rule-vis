@@ -197,6 +197,30 @@
     return 'neu';
   }
 
+  function expandCohorts(data) {
+    const cohorts = data.cohorts ?? {};
+    const fields  = ['subject_entity', 'affected_entity', 'authority_entity'];
+    const rules   = [];
+    for (const rule of data.rules) {
+      let expanded = false;
+      for (const field of fields) {
+        const val = rule[field];
+        if (typeof val === 'string' && val.startsWith('@')) {
+          const members = cohorts[val.slice(1)];
+          if (members) {
+            for (const member of members) {
+              rules.push({ ...rule, id: `${rule.id}_${member}`, [field]: member });
+            }
+            expanded = true;
+            break;
+          }
+        }
+      }
+      if (!expanded) rules.push(rule);
+    }
+    return { ...data, rules };
+  }
+
   function buildElements(data) {
     const nameOf = Object.fromEntries(data.entities.map(e => [e.id, e.name]));
 
@@ -350,7 +374,7 @@
 
     cy = cytoscape({
       container: document.getElementById('cy'),
-      elements:  buildElements(data),
+      elements:  buildElements(expandCohorts(data)),
       style: [
         {
           selector: 'node',
