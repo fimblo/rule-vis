@@ -28,3 +28,5 @@ jobs:
           path: .
       - id: deployment
         uses: actions/deploy-pages@v4
+      - name: Link to live site
+        run: echo "### Deployed to [${{ steps.deployment.outputs.page_url }}](${{ steps.deployment.outputs.page_url }})" >> $GITHUB_STEP_SUMMARY
