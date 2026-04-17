@@ -1,8 +1,8 @@
 {
-  "schema_version": "0.4.0",
+  "schema_version": "0.5.0",
   "ruleset": {
     "name": "Munchkin (Simplified)",
-    "description": "## Munchkin (Simplified)\n\nCompetitive dungeon-delving card game for 3–6 players (modelled with 4).\n\n**Goal:** be the first to reach **Level 10** by killing monsters.\n\n**Turn structure:**\n1. *Kick open the door* — draw a Door card\n2. *Fight the monster* (or look for trouble / loot the room)\n3. *Gain a level + treasure* on victory\n4. *Charity* — discard down to 5 hand cards at turn end\n\n**Key mechanics:**\n- Other players may **help** the active player fight (split the treasure)\n- Other players may **hinder** the fight with Bad Stuff cards\n- Equipment cards raise your combat strength\n- Card types are modelled as generic entities; individual card text is in rule descriptions",
+    "description": "## Munchkin (Simplified)\n\nCompetitive dungeon-delving card game for 3–6 players (modelled with 4).\n\n**Goal:** be the first to reach **Level 10** by killing monsters.\n\n**Turn structure:**\n1. *Door* — kick open the dungeon door, draw a Door card\n2. *Combat* — fight the monster (or look for trouble); other players may help or hinder\n3. *Loot* — draw treasure cards on victory\n4. *End of turn* — discard down to 5 hand cards (charity rule)\n\n**Key mechanics:**\n- Other players may **help** the active player fight (split the treasure)\n- Other players may **hinder** the fight with Bad Stuff cards\n- Equipment cards raise your combat strength\n- Card types are modelled as generic entities; individual card text is in rule descriptions",
     "source": "Steve Jackson Games (simplified model)"
   },
   "entities": [
@@ -15,413 +15,203 @@
     { "id": "monster",      "name": "Monster",      "type": "game_component" },
     { "id": "treasure",     "name": "Treasure",     "type": "game_component" }
   ],
+  "cohorts": {
+    "all_players": ["player_1", "player_2", "player_3", "player_4"],
+    "p1_others":   ["player_2", "player_3", "player_4"],
+    "p2_others":   ["player_1", "player_3", "player_4"],
+    "p3_others":   ["player_1", "player_2", "player_4"],
+    "p4_others":   ["player_1", "player_2", "player_3"]
+  },
+  "phases": ["door", "combat", "loot", "end_of_turn"],
   "rules": [
     {
-      "id": "r01", "rule_name": "p1_kick_open_door",
+      "id": "r01",
+      "rule_name": "kick_open_door",
       "rule_type": "obligation",
-      "authority_entity": "moderator", "subject_entity": "player_1",
-      "authority_utility": 0, "subject_utility": 0,
-      "affected_entity": "dungeon_deck", "affected_utility": -1,
-      "description": "Player 1 must kick open the dungeon door as the first action of their turn, drawing a Door card face-up"
+      "phase": "door",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": 0,
+      "affected_entity": "dungeon_deck",
+      "affected_utility": -1,
+      "description": "The active player must kick open the dungeon door as the first action of their turn, drawing a Door card face-up"
     },
     {
-      "id": "r02", "rule_name": "p2_kick_open_door",
-      "rule_type": "obligation",
-      "authority_entity": "moderator", "subject_entity": "player_2",
-      "authority_utility": 0, "subject_utility": 0,
-      "affected_entity": "dungeon_deck", "affected_utility": -1,
-      "description": "Player 2 must kick open the dungeon door as the first action of their turn, drawing a Door card face-up"
-    },
-    {
-      "id": "r03", "rule_name": "p3_kick_open_door",
-      "rule_type": "obligation",
-      "authority_entity": "moderator", "subject_entity": "player_3",
-      "authority_utility": 0, "subject_utility": 0,
-      "affected_entity": "dungeon_deck", "affected_utility": -1,
-      "description": "Player 3 must kick open the dungeon door as the first action of their turn, drawing a Door card face-up"
-    },
-    {
-      "id": "r04", "rule_name": "p4_kick_open_door",
-      "rule_type": "obligation",
-      "authority_entity": "moderator", "subject_entity": "player_4",
-      "authority_utility": 0, "subject_utility": 0,
-      "affected_entity": "dungeon_deck", "affected_utility": -1,
-      "description": "Player 4 must kick open the dungeon door as the first action of their turn, drawing a Door card face-up"
-    },
-    {
-      "id": "r05", "rule_name": "p1_may_look_for_trouble",
+      "id": "r02",
+      "rule_name": "may_look_for_trouble",
       "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_1",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "monster", "affected_utility": -1,
-      "description": "If no monster appeared when kicking the door, Player 1 may play a monster from their hand to fight it"
+      "phase": "combat",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "monster",
+      "affected_utility": -1,
+      "description": "If no monster appeared when kicking the door, the active player may play a monster from their hand to fight it"
     },
     {
-      "id": "r06", "rule_name": "p2_may_look_for_trouble",
+      "id": "r03",
+      "rule_name": "wins_combat",
       "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_2",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "monster", "affected_utility": -1,
-      "description": "If no monster appeared when kicking the door, Player 2 may play a monster from their hand to fight it"
+      "phase": "combat",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "monster",
+      "affected_utility": -1,
+      "description": "If the active player's level plus item bonuses exceed the monster's level, they kill it and gain one level"
     },
     {
-      "id": "r07", "rule_name": "p3_may_look_for_trouble",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_3",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "monster", "affected_utility": -1,
-      "description": "If no monster appeared when kicking the door, Player 3 may play a monster from their hand to fight it"
-    },
-    {
-      "id": "r08", "rule_name": "p4_may_look_for_trouble",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_4",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "monster", "affected_utility": -1,
-      "description": "If no monster appeared when kicking the door, Player 4 may play a monster from their hand to fight it"
-    },
-    {
-      "id": "r09", "rule_name": "p1_wins_combat",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_1",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "monster", "affected_utility": -1,
-      "description": "If Player 1's level plus item bonuses exceed the monster's level, they kill it and gain one level plus treasure cards"
-    },
-    {
-      "id": "r10", "rule_name": "p2_wins_combat",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_2",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "monster", "affected_utility": -1,
-      "description": "If Player 2's level plus item bonuses exceed the monster's level, they kill it and gain one level plus treasure cards"
-    },
-    {
-      "id": "r11", "rule_name": "p3_wins_combat",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_3",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "monster", "affected_utility": -1,
-      "description": "If Player 3's level plus item bonuses exceed the monster's level, they kill it and gain one level plus treasure cards"
-    },
-    {
-      "id": "r12", "rule_name": "p4_wins_combat",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_4",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "monster", "affected_utility": -1,
-      "description": "If Player 4's level plus item bonuses exceed the monster's level, they kill it and gain one level plus treasure cards"
-    },
-    {
-      "id": "r13", "rule_name": "p1_bad_stuff_on_loss",
+      "id": "r04",
+      "rule_name": "bad_stuff_on_loss",
       "rule_type": "prohibition",
-      "authority_entity": "moderator", "subject_entity": "player_1",
-      "authority_utility": 0, "subject_utility": -1,
-      "affected_entity": "monster", "affected_utility": 1,
-      "description": "If Player 1 cannot beat the monster and fails to run away, the monster's bad stuff occurs (lose levels, items, or worse)"
+      "phase": "combat",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "affected_entity": "monster",
+      "affected_utility": 1,
+      "description": "If the active player cannot beat the monster and fails to run away, the monster's bad stuff occurs (lose levels, items, or worse)"
     },
     {
-      "id": "r14", "rule_name": "p2_bad_stuff_on_loss",
-      "rule_type": "prohibition",
-      "authority_entity": "moderator", "subject_entity": "player_2",
-      "authority_utility": 0, "subject_utility": -1,
-      "affected_entity": "monster", "affected_utility": 1,
-      "description": "If Player 2 cannot beat the monster and fails to run away, the monster's bad stuff occurs (lose levels, items, or worse)"
-    },
-    {
-      "id": "r15", "rule_name": "p3_bad_stuff_on_loss",
-      "rule_type": "prohibition",
-      "authority_entity": "moderator", "subject_entity": "player_3",
-      "authority_utility": 0, "subject_utility": -1,
-      "affected_entity": "monster", "affected_utility": 1,
-      "description": "If Player 3 cannot beat the monster and fails to run away, the monster's bad stuff occurs (lose levels, items, or worse)"
-    },
-    {
-      "id": "r16", "rule_name": "p4_bad_stuff_on_loss",
-      "rule_type": "prohibition",
-      "authority_entity": "moderator", "subject_entity": "player_4",
-      "authority_utility": 0, "subject_utility": -1,
-      "affected_entity": "monster", "affected_utility": 1,
-      "description": "If Player 4 cannot beat the monster and fails to run away, the monster's bad stuff occurs (lose levels, items, or worse)"
-    },
-    {
-      "id": "r17", "rule_name": "p1_may_help_p2",
+      "id": "r05",
+      "rule_name": "p1_may_help",
       "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_1",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_2", "affected_utility": 1,
-      "description": "Player 1 may offer to help Player 2 in combat; if accepted, they add their level and items to the fight in exchange for a negotiated share of the treasure"
+      "phase": "combat",
+      "authority_entity": "moderator",
+      "subject_entity": "player_1",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "@p1_others",
+      "affected_utility": 1,
+      "description": "Player 1 may offer to help another player in combat, adding their level and items to the fight in exchange for a negotiated share of the treasure"
     },
     {
-      "id": "r18", "rule_name": "p1_may_help_p3",
+      "id": "r06",
+      "rule_name": "p2_may_help",
       "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_1",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_3", "affected_utility": 1,
-      "description": "Player 1 may offer to help Player 3 in combat; if accepted, they add their level and items to the fight in exchange for a negotiated share of the treasure"
+      "phase": "combat",
+      "authority_entity": "moderator",
+      "subject_entity": "player_2",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "@p2_others",
+      "affected_utility": 1,
+      "description": "Player 2 may offer to help another player in combat, adding their level and items to the fight in exchange for a negotiated share of the treasure"
     },
     {
-      "id": "r19", "rule_name": "p1_may_help_p4",
+      "id": "r07",
+      "rule_name": "p3_may_help",
       "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_1",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_4", "affected_utility": 1,
-      "description": "Player 1 may offer to help Player 4 in combat; if accepted, they add their level and items to the fight in exchange for a negotiated share of the treasure"
+      "phase": "combat",
+      "authority_entity": "moderator",
+      "subject_entity": "player_3",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "@p3_others",
+      "affected_utility": 1,
+      "description": "Player 3 may offer to help another player in combat, adding their level and items to the fight in exchange for a negotiated share of the treasure"
     },
     {
-      "id": "r20", "rule_name": "p2_may_help_p1",
+      "id": "r08",
+      "rule_name": "p4_may_help",
       "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_2",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_1", "affected_utility": 1,
-      "description": "Player 2 may offer to help Player 1 in combat; if accepted, they add their level and items to the fight in exchange for a negotiated share of the treasure"
+      "phase": "combat",
+      "authority_entity": "moderator",
+      "subject_entity": "player_4",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "@p4_others",
+      "affected_utility": 1,
+      "description": "Player 4 may offer to help another player in combat, adding their level and items to the fight in exchange for a negotiated share of the treasure"
     },
     {
-      "id": "r21", "rule_name": "p2_may_help_p3",
+      "id": "r09",
+      "rule_name": "p1_may_hinder",
       "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_2",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_3", "affected_utility": 1,
-      "description": "Player 2 may offer to help Player 3 in combat; if accepted, they add their level and items to the fight in exchange for a negotiated share of the treasure"
+      "phase": "combat",
+      "authority_entity": "moderator",
+      "subject_entity": "player_1",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "@p1_others",
+      "affected_utility": -1,
+      "description": "Player 1 may play cards during another player's combat to boost the monster, add obstacles, or otherwise sabotage the fight"
     },
     {
-      "id": "r22", "rule_name": "p2_may_help_p4",
+      "id": "r10",
+      "rule_name": "p2_may_hinder",
       "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_2",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_4", "affected_utility": 1,
-      "description": "Player 2 may offer to help Player 4 in combat; if accepted, they add their level and items to the fight in exchange for a negotiated share of the treasure"
+      "phase": "combat",
+      "authority_entity": "moderator",
+      "subject_entity": "player_2",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "@p2_others",
+      "affected_utility": -1,
+      "description": "Player 2 may play cards during another player's combat to boost the monster, add obstacles, or otherwise sabotage the fight"
     },
     {
-      "id": "r23", "rule_name": "p3_may_help_p1",
+      "id": "r11",
+      "rule_name": "p3_may_hinder",
       "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_3",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_1", "affected_utility": 1,
-      "description": "Player 3 may offer to help Player 1 in combat; if accepted, they add their level and items to the fight in exchange for a negotiated share of the treasure"
+      "phase": "combat",
+      "authority_entity": "moderator",
+      "subject_entity": "player_3",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "@p3_others",
+      "affected_utility": -1,
+      "description": "Player 3 may play cards during another player's combat to boost the monster, add obstacles, or otherwise sabotage the fight"
     },
     {
-      "id": "r24", "rule_name": "p3_may_help_p2",
+      "id": "r12",
+      "rule_name": "p4_may_hinder",
       "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_3",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_2", "affected_utility": 1,
-      "description": "Player 3 may offer to help Player 2 in combat; if accepted, they add their level and items to the fight in exchange for a negotiated share of the treasure"
+      "phase": "combat",
+      "authority_entity": "moderator",
+      "subject_entity": "player_4",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "@p4_others",
+      "affected_utility": -1,
+      "description": "Player 4 may play cards during another player's combat to boost the monster, add obstacles, or otherwise sabotage the fight"
     },
     {
-      "id": "r25", "rule_name": "p3_may_help_p4",
+      "id": "r13",
+      "rule_name": "gains_treasure",
       "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_3",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_4", "affected_utility": 1,
-      "description": "Player 3 may offer to help Player 4 in combat; if accepted, they add their level and items to the fight in exchange for a negotiated share of the treasure"
+      "phase": "loot",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "treasure",
+      "affected_utility": -1,
+      "description": "After killing a monster, the active player draws treasure cards equal to the monster's treasure value"
     },
     {
-      "id": "r26", "rule_name": "p4_may_help_p1",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_4",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_1", "affected_utility": 1,
-      "description": "Player 4 may offer to help Player 1 in combat; if accepted, they add their level and items to the fight in exchange for a negotiated share of the treasure"
-    },
-    {
-      "id": "r27", "rule_name": "p4_may_help_p2",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_4",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_2", "affected_utility": 1,
-      "description": "Player 4 may offer to help Player 2 in combat; if accepted, they add their level and items to the fight in exchange for a negotiated share of the treasure"
-    },
-    {
-      "id": "r28", "rule_name": "p4_may_help_p3",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_4",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_3", "affected_utility": 1,
-      "description": "Player 4 may offer to help Player 3 in combat; if accepted, they add their level and items to the fight in exchange for a negotiated share of the treasure"
-    },
-    {
-      "id": "r29", "rule_name": "p1_may_hinder_p2",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_1",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_2", "affected_utility": -1,
-      "description": "Player 1 may play cards from their hand during Player 2's combat to boost the monster, add obstacles, or otherwise sabotage the fight"
-    },
-    {
-      "id": "r30", "rule_name": "p1_may_hinder_p3",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_1",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_3", "affected_utility": -1,
-      "description": "Player 1 may play cards from their hand during Player 3's combat to boost the monster, add obstacles, or otherwise sabotage the fight"
-    },
-    {
-      "id": "r31", "rule_name": "p1_may_hinder_p4",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_1",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_4", "affected_utility": -1,
-      "description": "Player 1 may play cards from their hand during Player 4's combat to boost the monster, add obstacles, or otherwise sabotage the fight"
-    },
-    {
-      "id": "r32", "rule_name": "p2_may_hinder_p1",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_2",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_1", "affected_utility": -1,
-      "description": "Player 2 may play cards from their hand during Player 1's combat to boost the monster, add obstacles, or otherwise sabotage the fight"
-    },
-    {
-      "id": "r33", "rule_name": "p2_may_hinder_p3",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_2",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_3", "affected_utility": -1,
-      "description": "Player 2 may play cards from their hand during Player 3's combat to boost the monster, add obstacles, or otherwise sabotage the fight"
-    },
-    {
-      "id": "r34", "rule_name": "p2_may_hinder_p4",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_2",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_4", "affected_utility": -1,
-      "description": "Player 2 may play cards from their hand during Player 4's combat to boost the monster, add obstacles, or otherwise sabotage the fight"
-    },
-    {
-      "id": "r35", "rule_name": "p3_may_hinder_p1",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_3",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_1", "affected_utility": -1,
-      "description": "Player 3 may play cards from their hand during Player 1's combat to boost the monster, add obstacles, or otherwise sabotage the fight"
-    },
-    {
-      "id": "r36", "rule_name": "p3_may_hinder_p2",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_3",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_2", "affected_utility": -1,
-      "description": "Player 3 may play cards from their hand during Player 2's combat to boost the monster, add obstacles, or otherwise sabotage the fight"
-    },
-    {
-      "id": "r37", "rule_name": "p3_may_hinder_p4",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_3",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_4", "affected_utility": -1,
-      "description": "Player 3 may play cards from their hand during Player 4's combat to boost the monster, add obstacles, or otherwise sabotage the fight"
-    },
-    {
-      "id": "r38", "rule_name": "p4_may_hinder_p1",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_4",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_1", "affected_utility": -1,
-      "description": "Player 4 may play cards from their hand during Player 1's combat to boost the monster, add obstacles, or otherwise sabotage the fight"
-    },
-    {
-      "id": "r39", "rule_name": "p4_may_hinder_p2",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_4",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_2", "affected_utility": -1,
-      "description": "Player 4 may play cards from their hand during Player 2's combat to boost the monster, add obstacles, or otherwise sabotage the fight"
-    },
-    {
-      "id": "r40", "rule_name": "p4_may_hinder_p3",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_4",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "player_3", "affected_utility": -1,
-      "description": "Player 4 may play cards from their hand during Player 3's combat to boost the monster, add obstacles, or otherwise sabotage the fight"
-    },
-    {
-      "id": "r41", "rule_name": "p1_must_give_charity",
+      "id": "r14",
+      "rule_name": "must_give_charity",
       "rule_type": "obligation",
-      "authority_entity": "moderator", "subject_entity": "player_1",
-      "authority_utility": 0, "subject_utility": -1,
-      "description": "At the end of their turn, Player 1 must give any cards over five to the lowest-level player (if tied, Player 1 chooses)"
+      "phase": "end_of_turn",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "description": "At the end of their turn, the active player must give any cards over five to the lowest-level player (if tied, active player chooses)"
     },
     {
-      "id": "r42", "rule_name": "p2_must_give_charity",
-      "rule_type": "obligation",
-      "authority_entity": "moderator", "subject_entity": "player_2",
-      "authority_utility": 0, "subject_utility": -1,
-      "description": "At the end of their turn, Player 2 must give any cards over five to the lowest-level player (if tied, Player 2 chooses)"
-    },
-    {
-      "id": "r43", "rule_name": "p3_must_give_charity",
-      "rule_type": "obligation",
-      "authority_entity": "moderator", "subject_entity": "player_3",
-      "authority_utility": 0, "subject_utility": -1,
-      "description": "At the end of their turn, Player 3 must give any cards over five to the lowest-level player (if tied, Player 3 chooses)"
-    },
-    {
-      "id": "r44", "rule_name": "p4_must_give_charity",
-      "rule_type": "obligation",
-      "authority_entity": "moderator", "subject_entity": "player_4",
-      "authority_utility": 0, "subject_utility": -1,
-      "description": "At the end of their turn, Player 4 must give any cards over five to the lowest-level player (if tied, Player 4 chooses)"
-    },
-    {
-      "id": "r49", "rule_name": "p1_gains_treasure",
+      "id": "r15",
+      "rule_name": "wins_at_level_10",
       "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_1",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "treasure", "affected_utility": -1,
-      "description": "After killing a monster, Player 1 draws treasure cards equal to the monster's treasure value"
-    },
-    {
-      "id": "r50", "rule_name": "p2_gains_treasure",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_2",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "treasure", "affected_utility": -1,
-      "description": "After killing a monster, Player 2 draws treasure cards equal to the monster's treasure value"
-    },
-    {
-      "id": "r51", "rule_name": "p3_gains_treasure",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_3",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "treasure", "affected_utility": -1,
-      "description": "After killing a monster, Player 3 draws treasure cards equal to the monster's treasure value"
-    },
-    {
-      "id": "r52", "rule_name": "p4_gains_treasure",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_4",
-      "authority_utility": 0, "subject_utility": 1,
-      "affected_entity": "treasure", "affected_utility": -1,
-      "description": "After killing a monster, Player 4 draws treasure cards equal to the monster's treasure value"
-    },
-    {
-      "id": "r45", "rule_name": "p1_wins_at_level_10",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_1",
-      "authority_utility": 0, "subject_utility": 1,
-      "description": "The first player to reach Level 10 by killing a monster wins the game immediately"
-    },
-    {
-      "id": "r46", "rule_name": "p2_wins_at_level_10",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_2",
-      "authority_utility": 0, "subject_utility": 1,
-      "description": "The first player to reach Level 10 by killing a monster wins the game immediately"
-    },
-    {
-      "id": "r47", "rule_name": "p3_wins_at_level_10",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_3",
-      "authority_utility": 0, "subject_utility": 1,
-      "description": "The first player to reach Level 10 by killing a monster wins the game immediately"
-    },
-    {
-      "id": "r48", "rule_name": "p4_wins_at_level_10",
-      "rule_type": "permission",
-      "authority_entity": "moderator", "subject_entity": "player_4",
-      "authority_utility": 0, "subject_utility": 1,
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": 1,
       "description": "The first player to reach Level 10 by killing a monster wins the game immediately"
     }
   ]
