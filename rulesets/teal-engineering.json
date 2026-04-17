@@ -1,0 +1,278 @@
+{
+  "schema_version": "0.5.0",
+  "ruleset": {
+    "name": "Teal Engineering Org",
+    "description": "## Teal Engineering Org\n\nA self-managing software engineering syndicate. Employees are the owners (shareholders). No managers.\n\n**Structure:**\n- One **Lead Team** of 7, elected by staff on 3-year rotating tenure (⅓ new, ⅓ mid, ⅓ senior each year)\n- Five autonomous **Engineering Teams**\n\n**Decision-making:**\n- *Advice model* — anyone may decide, but must first seek advice from those affected\n- *Consent* — lightweight decisions: any team may block\n- *Majority vote* — serious decisions go to the Lead Team\n\n**Planning:** OKRs on a quarterly cadence. Each team: max 2 objectives, max 3 KRs each. Adjacent teams align before finalising.\n\n**Cadences modelled:**\n- Weekly: planning, demo, retro (per engineering team)\n- Bi-weekly: tech forum (all engineers), KR sync (all teams)\n- Monthly: all-hands + Lead Team reports to shareholders\n- Quarterly: OKR planning\n- Yearly: salary review, Lead Team elections",
+    "source": "Composite model — Teal/Holacracy-inspired"
+  },
+  "entities": [
+    { "id": "org_policy",           "name": "Org Policy",          "type": "authority", "faction": null },
+    { "id": "lead_team",            "name": "Lead Team",           "type": "team",      "faction": "leadership" },
+    { "id": "team_a",               "name": "Team A",              "type": "team",      "faction": "engineering" },
+    { "id": "team_b",               "name": "Team B",              "type": "team",      "faction": "engineering" },
+    { "id": "team_c",               "name": "Team C",              "type": "team",      "faction": "engineering" },
+    { "id": "team_d",               "name": "Team D",              "type": "team",      "faction": "engineering" },
+    { "id": "team_e",               "name": "Team E",              "type": "team",      "faction": "engineering" },
+    { "id": "shareholders",         "name": "Shareholders",        "type": "group",     "faction": "ownership" },
+    { "id": "weekly_planning",      "name": "Weekly Planning",     "type": "process",   "faction": null },
+    { "id": "weekly_demo",          "name": "Weekly Demo",         "type": "process",   "faction": null },
+    { "id": "weekly_retro",         "name": "Weekly Retro",        "type": "process",   "faction": null },
+    { "id": "biweekly_tech_forum",  "name": "Tech Forum",          "type": "process",   "faction": null },
+    { "id": "biweekly_kr_sync",     "name": "KR Sync",             "type": "process",   "faction": null },
+    { "id": "monthly_allhands",     "name": "All-Hands",           "type": "process",   "faction": null },
+    { "id": "quarterly_okr",        "name": "Quarterly OKR",       "type": "process",   "faction": null },
+    { "id": "yearly_election",      "name": "Lead Election",       "type": "process",   "faction": null },
+    { "id": "yearly_salary_review", "name": "Salary Review",       "type": "process",   "faction": null }
+  ],
+  "cohorts": {
+    "eng_teams":  ["team_a", "team_b", "team_c", "team_d", "team_e"],
+    "all_teams":  ["lead_team", "team_a", "team_b", "team_c", "team_d", "team_e"]
+  },
+  "phases": ["weekly", "biweekly", "monthly", "quarterly", "yearly"],
+  "rules": [
+
+    {
+      "id": "r01",
+      "rule_name": "advice_before_decision",
+      "rule_type": "obligation",
+      "authority_entity": "org_policy",
+      "subject_entity": "@all_teams",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "description": "Before making any decision that significantly affects others, a team or individual must first seek advice from those who will be impacted and from relevant experts. The advice need not be followed, but it must be genuinely sought."
+    },
+    {
+      "id": "r02",
+      "rule_name": "consent_on_lightweight_decisions",
+      "rule_type": "permission",
+      "authority_entity": "org_policy",
+      "subject_entity": "@all_teams",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "description": "Any team or individual may raise a consent objection to block a lightweight decision. A decision is blocked until the objection is resolved or withdrawn. This gives every team a meaningful voice in decisions that affect them."
+    },
+    {
+      "id": "r03",
+      "rule_name": "majority_on_serious_decisions",
+      "rule_type": "permission",
+      "authority_entity": "org_policy",
+      "subject_entity": "lead_team",
+      "authority_utility": 0,
+      "subject_utility": 2,
+      "description": "Decisions classified as serious (significant resource allocation, structural changes, policy creation) are made by majority vote of the Lead Team, after the advice process has been completed."
+    },
+    {
+      "id": "r04",
+      "rule_name": "lead_team_handles_governance",
+      "rule_type": "permission",
+      "authority_entity": "org_policy",
+      "subject_entity": "lead_team",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "@eng_teams",
+      "affected_utility": 1,
+      "description": "The Lead Team owns governance tasks that engineering teams cannot or do not wish to handle — legal compliance, contracts, external relationships, cross-team coordination. Engineering teams benefit by being shielded from this overhead."
+    },
+    {
+      "id": "r05",
+      "rule_name": "lead_team_may_propose_policy",
+      "rule_type": "permission",
+      "authority_entity": "org_policy",
+      "subject_entity": "lead_team",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "description": "The Lead Team may propose new organisational rules, policies, or processes, or the removal of existing ones. Proposals undergo consent-based ratification by the full staff."
+    },
+    {
+      "id": "r06",
+      "rule_name": "lead_team_urgent_decision_authority",
+      "rule_type": "permission",
+      "authority_entity": "org_policy",
+      "subject_entity": "lead_team",
+      "authority_utility": 0,
+      "subject_utility": 2,
+      "description": "The Lead Team may make urgent decisions that cannot wait for the next monthly all-hands. Urgency must be declared explicitly. The decision and its rationale are reported at the next all-hands."
+    },
+    {
+      "id": "r07",
+      "rule_name": "promotions_by_group_consent",
+      "rule_type": "permission",
+      "authority_entity": "org_policy",
+      "subject_entity": "shareholders",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "@all_teams",
+      "affected_utility": 1,
+      "description": "Promotions and role changes are decided collectively by the employee-shareholders using the consent process. Any staff member may raise an objection. The annual salary review cadence is the primary window for these decisions."
+    },
+    {
+      "id": "r08",
+      "rule_name": "rotating_tenure_constraint",
+      "rule_type": "prohibition",
+      "authority_entity": "org_policy",
+      "subject_entity": "lead_team",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "description": "Lead Team members serve a 3-year rotating tenure. No member may serve consecutive full terms without standing for re-election. This prevents entrenchment and ensures ⅓ of the team rotates each year."
+    },
+
+    {
+      "id": "r09",
+      "rule_name": "weekly_planning_obligation",
+      "rule_type": "obligation",
+      "phase": "weekly",
+      "authority_entity": "org_policy",
+      "subject_entity": "@eng_teams",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "affected_entity": "weekly_planning",
+      "affected_utility": 0,
+      "description": "Each engineering team holds a weekly planning session to review their objectives, reprioritise the backlog, and commit to the week's work. The Lead Team is not required to attend."
+    },
+    {
+      "id": "r10",
+      "rule_name": "weekly_demo_obligation",
+      "rule_type": "obligation",
+      "phase": "weekly",
+      "authority_entity": "org_policy",
+      "subject_entity": "@eng_teams",
+      "authority_utility": 0,
+      "subject_utility": 0,
+      "affected_entity": "weekly_demo",
+      "affected_utility": 0,
+      "description": "Each engineering team demonstrates completed work each week. Demos are open to the whole org. They create visibility, celebrate progress, and surface integration risks early."
+    },
+    {
+      "id": "r11",
+      "rule_name": "weekly_retro_obligation",
+      "rule_type": "obligation",
+      "phase": "weekly",
+      "authority_entity": "org_policy",
+      "subject_entity": "@eng_teams",
+      "authority_utility": 0,
+      "subject_utility": 0,
+      "affected_entity": "weekly_retro",
+      "affected_utility": 0,
+      "description": "Each engineering team holds a weekly retrospective to reflect on process, identify blockers, and surface improvement actions. Retros are team-internal; outputs may be shared at the tech forum."
+    },
+
+    {
+      "id": "r12",
+      "rule_name": "biweekly_tech_forum",
+      "rule_type": "obligation",
+      "phase": "biweekly",
+      "authority_entity": "org_policy",
+      "subject_entity": "@eng_teams",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "biweekly_tech_forum",
+      "affected_utility": 0,
+      "description": "Every two weeks, engineers across all teams meet to share technical learnings, discuss standards, and align on cross-cutting concerns (architecture, security, tooling). Attendance is expected from at least one representative per team."
+    },
+    {
+      "id": "r13",
+      "rule_name": "biweekly_kr_sync",
+      "rule_type": "obligation",
+      "phase": "biweekly",
+      "authority_entity": "org_policy",
+      "subject_entity": "@all_teams",
+      "authority_utility": 0,
+      "subject_utility": 0,
+      "affected_entity": "biweekly_kr_sync",
+      "affected_utility": 0,
+      "description": "Every two weeks, all teams check in on progress against their Key Results. The sync surfaces blockers, dependencies, and early signs of off-track objectives so the org can respond before the quarter ends."
+    },
+
+    {
+      "id": "r14",
+      "rule_name": "lead_team_monthly_report",
+      "rule_type": "obligation",
+      "phase": "monthly",
+      "authority_entity": "org_policy",
+      "subject_entity": "lead_team",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "affected_entity": "shareholders",
+      "affected_utility": 2,
+      "description": "The Lead Team reports to all employee-shareholders each month: financial health, key decisions made, open risks, and progress on org-level goals. Transparency is a core ownership right."
+    },
+    {
+      "id": "r15",
+      "rule_name": "monthly_allhands_attendance",
+      "rule_type": "obligation",
+      "phase": "monthly",
+      "authority_entity": "org_policy",
+      "subject_entity": "@all_teams",
+      "authority_utility": 0,
+      "subject_utility": 0,
+      "affected_entity": "monthly_allhands",
+      "affected_utility": 0,
+      "description": "All teams attend the monthly all-hands. The Lead Team presents the monthly report, urgent decisions are ratified or reviewed, and cross-team topics are surfaced. Any staff member may add agenda items."
+    },
+
+    {
+      "id": "r16",
+      "rule_name": "quarterly_okr_planning",
+      "rule_type": "obligation",
+      "phase": "quarterly",
+      "authority_entity": "org_policy",
+      "subject_entity": "@all_teams",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "affected_entity": "quarterly_okr",
+      "affected_utility": 0,
+      "description": "At the start of each quarter, all teams define their Objectives and Key Results. The Lead Team sets org-level objectives first; engineering teams then set team-level objectives that contribute to or complement them."
+    },
+    {
+      "id": "r17",
+      "rule_name": "max_two_objectives_per_eng_team",
+      "rule_type": "prohibition",
+      "phase": "quarterly",
+      "authority_entity": "org_policy",
+      "subject_entity": "@eng_teams",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "description": "Engineering teams may not commit to more than two Objectives per quarter (max 3 KRs each). This constraint enforces focus and prevents teams from diluting effort across too many goals."
+    },
+    {
+      "id": "r18",
+      "rule_name": "adjacent_team_okr_alignment",
+      "rule_type": "obligation",
+      "phase": "quarterly",
+      "authority_entity": "org_policy",
+      "subject_entity": "@eng_teams",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "affected_entity": "quarterly_okr",
+      "affected_utility": 0,
+      "description": "Before finalising their OKRs, each engineering team must consult with adjacent teams (those with shared interfaces, dependencies, or users) to identify conflicts and alignment opportunities. The quarterly OKR process provides the formal window for this."
+    },
+
+    {
+      "id": "r19",
+      "rule_name": "yearly_salary_review",
+      "rule_type": "obligation",
+      "phase": "yearly",
+      "authority_entity": "org_policy",
+      "subject_entity": "@all_teams",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "yearly_salary_review",
+      "affected_utility": 0,
+      "description": "Once per year, all staff participate in a collective salary and role review. Each person's compensation is reviewed by their peers using the consent process. The aim is fairness and market alignment, not hierarchical approval."
+    },
+    {
+      "id": "r20",
+      "rule_name": "lead_team_election",
+      "rule_type": "obligation",
+      "phase": "yearly",
+      "authority_entity": "org_policy",
+      "subject_entity": "shareholders",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "lead_team",
+      "affected_utility": 0,
+      "description": "Each year, roughly one-third of Lead Team seats come up for election. Any employee may stand. The election uses a combination of the advice process (candidates seek feedback) and consent ratification (staff may block a candidate). This ensures ⅓ new, ⅓ mid-tenure, ⅓ senior members at any time."
+    }
+  ]
+}
