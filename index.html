@@ -416,13 +416,39 @@
   const phaseSlider = document.getElementById('phase-slider');
   const phaseLabels = document.getElementById('phase-labels');
 
+  let expandedData = null;
+
   function applyPhaseFilter(phaseIdx, phases) {
     const active = phaseIdx === 0 ? null : phases[phaseIdx - 1];
+
     cy.edges().forEach(edge => {
       const ep = edge.data('phase');
       const inactive = active !== null && ep !== null && ep !== active;
       edge.toggleClass('phase-inactive', inactive);
     });
+
+    // Recompute net utility per node for the active phase
+    const rules = expandedData.rules.filter(
+      r => active === null || r.phase == null || r.phase === active
+    );
+    const netSub = {}, netAff = {};
+    expandedData.entities.forEach(e => { netSub[e.id] = 0; netAff[e.id] = 0; });
+    rules.forEach(r => {
+      netSub[r.subject_entity] += r.subject_utility;
+      if (r.affected_entity != null) netAff[r.affected_entity] += (r.affected_utility ?? 0);
+    });
+
+    cy.nodes().forEach(node => {
+      const id  = node.id();
+      const net = (netSub[id] ?? 0) + (netAff[id] ?? 0);
+      const base = `${node.data('entityName')}\n(${net > 0 ? '+' : ''}${net})`;
+      const pinned = node.hasClass('pinned');
+      node.data('label',       pinned ? base + ' 📌' : base);
+      node.data('baseLabel',   base);
+      node.data('netUtility',  net);
+      node.data('borderColor', net > 0 ? '#4ade80' : net < 0 ? '#f87171' : '#6b7280');
+    });
+
     phaseLabels.querySelectorAll('span').forEach((s, i) => {
       s.classList.toggle('active-phase', i === phaseIdx);
     });
@@ -446,9 +472,10 @@
 
     if (cy) { cy.destroy(); cy = null; }
 
+    expandedData = expandCohorts(data);
     cy = cytoscape({
       container: document.getElementById('cy'),
-      elements:  buildElements(expandCohorts(data)),
+      elements:  buildElements(expandedData),
       style: [
         {
           selector: 'node',
