@@ -365,6 +365,38 @@
       "description": "At the end of their turn, Player 4 must give any cards over five to the lowest-level player (if tied, Player 4 chooses)"
     },
     {
+      "id": "r49", "rule_name": "p1_gains_treasure",
+      "rule_type": "positive",
+      "source_entity": "moderator", "target_entity": "player_1",
+      "source_utility": 0, "target_utility": 1,
+      "object_entity": "treasure", "object_utility": -1,
+      "description": "After killing a monster, Player 1 draws treasure cards equal to the monster's treasure value"
+    },
+    {
+      "id": "r50", "rule_name": "p2_gains_treasure",
+      "rule_type": "positive",
+      "source_entity": "moderator", "target_entity": "player_2",
+      "source_utility": 0, "target_utility": 1,
+      "object_entity": "treasure", "object_utility": -1,
+      "description": "After killing a monster, Player 2 draws treasure cards equal to the monster's treasure value"
+    },
+    {
+      "id": "r51", "rule_name": "p3_gains_treasure",
+      "rule_type": "positive",
+      "source_entity": "moderator", "target_entity": "player_3",
+      "source_utility": 0, "target_utility": 1,
+      "object_entity": "treasure", "object_utility": -1,
+      "description": "After killing a monster, Player 3 draws treasure cards equal to the monster's treasure value"
+    },
+    {
+      "id": "r52", "rule_name": "p4_gains_treasure",
+      "rule_type": "positive",
+      "source_entity": "moderator", "target_entity": "player_4",
+      "source_utility": 0, "target_utility": 1,
+      "object_entity": "treasure", "object_utility": -1,
+      "description": "After killing a monster, Player 4 draws treasure cards equal to the monster's treasure value"
+    },
+    {
       "id": "r45", "rule_name": "p1_wins_at_level_10",
       "rule_type": "positive",
       "source_entity": "moderator", "target_entity": "player_1",
