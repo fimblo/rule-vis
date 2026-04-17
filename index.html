@@ -295,6 +295,10 @@
           style: { 'display': 'none' }
         },
         {
+          selector: 'node.hover-highlight',
+          style: { 'border-color': '#f9fafb', 'border-width': 3 }
+        },
+        {
           selector: 'edge',
           style: {
             'line-color':           'data(color)',
@@ -302,17 +306,21 @@
             'target-arrow-shape':   'triangle',
             'curve-style':          'bezier',
             'width':                2,
-            'opacity':              0.75,
+            'opacity':              0.12,
           }
         },
         {
           selector: 'edge[edgeKind = "acts-on"]',
           style: {
-            'line-style':  'dashed',
+            'line-style':        'dashed',
             'line-dash-pattern': [6, 4],
-            'width':       1.5,
-            'opacity':     0.5,
+            'width':             1.5,
+            'opacity':           0.12,
           }
+        },
+        {
+          selector: 'edge.hover-highlight',
+          style: { 'opacity': 0.9 }
         },
         {
           selector: 'edge:selected',
@@ -340,6 +348,16 @@
       tooltip.hidden = true;
       evt.target.toggleClass('muted');
       updateEdgeVisibility();
+    });
+
+    cy.on('mouseover', 'node', evt => {
+      const node = evt.target;
+      node.addClass('hover-highlight');
+      node.connectedEdges().not('.hidden').addClass('hover-highlight');
+    });
+    cy.on('mouseout', 'node', evt => {
+      evt.target.removeClass('hover-highlight');
+      evt.target.connectedEdges().removeClass('hover-highlight');
     });
 
     cy.on('mouseover', 'edge', evt => showTooltip(evt, evt.target.data()));
