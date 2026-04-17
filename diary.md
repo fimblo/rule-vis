@@ -131,3 +131,16 @@ Small change, big clarity improvement. The ambiguity was a real UX problem — w
 None this turn.
 
 ---
+
+## 2026-04-17 — Entry 11
+
+**Summary:**
+User asked for click-to-mute on nodes: clicking an entity grays it out and hides all its connected edges; clicking again restores it. Implemented with a Cytoscape `muted` class on nodes (grayed, 45% opacity) and a `hidden` class on edges (`display: none`). A `tap` handler on nodes toggles `muted` and recomputes edge visibility — an edge is hidden if either endpoint is muted. Works correctly for multi-muted scenarios.
+
+**Sentiments:**
+Clean interaction, implemented tidily. Muting is exactly the right primitive for exploring a dense rule graph — you can progressively silence entities to focus on the relationships that matter.
+
+**CLAUDE.md recommendations:**
+None this turn.
+
+---
