@@ -310,3 +310,16 @@ This was a satisfying analytical exercise — game theory reasoning mapped clean
 
 **CLAUDE.md recommendations:**
 None this turn.
+
+---
+
+## 2026-04-17 — Entry 25
+
+**Summary:**
+Replaced the single flat ruleset selector with a two-level game/variant UI. A `RULESETS` array in JS groups variants under each game. The game `<select>` is always visible; a second variant `<select>` appears only when the chosen game has more than one variant (currently only Werewolf). Selecting a game immediately loads its first variant and populates (or hides) the variant picker. The HTML `<option>` elements are built programmatically from `RULESETS` so adding future variants requires only a JS array entry, not HTML changes.
+
+**Sentiments:**
+Clean separation of concerns — the menu logic is now data-driven. The variant selector appearing contextually is unobtrusive and scales naturally if more multi-variant games are added.
+
+**CLAUDE.md recommendations:**
+None this turn.
