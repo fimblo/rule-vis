@@ -272,3 +272,15 @@ The two-problem diagnosis was clean: overlap is a within-level problem, excess h
 **CLAUDE.md recommendations:**
 None this turn.
 
+
+## 2026-04-17 — Entry 22
+
+**Summary:**
+Fixed a coordinate-space bug introduced in the previous layout change. The stratified layout code was using `cy.width()` and `cy.height()` (screen pixels) to set `node.position({ x, y })` values, but Cytoscape positions are in *model coordinates* — a separate space that doesn't map 1:1 to pixels unless zoom is exactly 1.0. Tic-Tac-Toe appeared to work by coincidence; Werewolf and Munchkin produced node piles because their denser graphs caused Cytoscape to zoom out, making the pixel→model mismatch severe. Fix: derive all positioning from `cy.nodes().boundingBox()`, which returns the extent of the cose layout in model coordinates. X and Y ranges are now bounded by the cose bounding box (minimum 400×200 model units), keeping everything in the same coordinate space.
+
+**Sentiments:**
+A textbook coordinate-space bug. The fix is clean once the root cause is identified. The lesson for future layout work: always work in model coordinates when calling `node.position()`, and always derive ranges from `boundingBox()` or existing node positions rather than `cy.width()`/`cy.height()`.
+
+**CLAUDE.md recommendations:**
+None this turn.
+
