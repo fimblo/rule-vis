@@ -318,7 +318,6 @@
     cy = cytoscape({
       container: document.getElementById('cy'),
       elements:  buildElements(data),
-
       style: [
         {
           selector: 'node',
@@ -397,23 +396,6 @@
         },
       ],
 
-      layout: {
-        name:                        'cose',
-        animate:                     false,
-        fit:                         true,
-        padding:                     80,
-        nodeRepulsion:               400000,
-        nodeOverlap:                 20,
-        idealEdgeLength:             200,
-        edgeElasticity:              100,
-        nestingFactor:               5,
-        gravity:                     80,
-        numIter:                     1000,
-        initialTemp:                 200,
-        coolingFactor:               0.95,
-        minTemp:                     1.0,
-        nodeDimensionsIncludeLabels: true,
-      }
     });
 
     function updateEdges() {
@@ -478,6 +460,42 @@
     });
     cy.on('tap', 'edge', evt => showTooltip(evt, evt.target.data()));
     cy.on('tap', 'core', ()  => { tooltip.hidden = true; });
+
+    const layout = cy.layout({
+      name:                        'cose',
+      animate:                     false,
+      fit:                         true,
+      padding:                     80,
+      nodeRepulsion:               400000,
+      nodeOverlap:                 20,
+      idealEdgeLength:             200,
+      edgeElasticity:              100,
+      nestingFactor:               5,
+      gravity:                     80,
+      numIter:                     1000,
+      initialTemp:                 200,
+      coolingFactor:               0.95,
+      minTemp:                     1.0,
+      nodeDimensionsIncludeLabels: true,
+    });
+
+    layout.on('layoutstop', () => {
+      const nets = cy.nodes().map(n => n.data('netUtility'));
+      const minNet = Math.min(...nets);
+      const maxNet = Math.max(...nets);
+      const range = maxNet - minNet;
+      if (range > 0) {
+        const h = cy.height();
+        const pad = 80;
+        cy.nodes().forEach(node => {
+          const t = (maxNet - node.data('netUtility')) / range;
+          node.position('y', pad + t * (h - 2 * pad));
+        });
+        cy.fit(cy.elements(), 80);
+      }
+    });
+
+    layout.run();
   }
 
   async function load(path) {
