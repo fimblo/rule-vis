@@ -280,6 +280,19 @@
           style: { 'border-color': '#f9fafb', 'border-width': 3 }
         },
         {
+          selector: 'node.muted',
+          style: {
+            'background-color': '#374151',
+            'border-color':     '#4b5563',
+            'color':            '#6b7280',
+            'opacity':          0.45,
+          }
+        },
+        {
+          selector: 'edge.hidden',
+          style: { 'display': 'none' }
+        },
+        {
           selector: 'edge',
           style: {
             'line-color':           'data(color)',
@@ -312,6 +325,19 @@
         idealEdgeLength:  120,
         animate:          false,
       }
+    });
+
+    function updateEdgeVisibility() {
+      cy.edges().forEach(edge => {
+        const hide = edge.source().hasClass('muted') || edge.target().hasClass('muted');
+        edge.toggleClass('hidden', hide);
+      });
+    }
+
+    cy.on('tap', 'node', evt => {
+      tooltip.hidden = true;
+      evt.target.toggleClass('muted');
+      updateEdgeVisibility();
     });
 
     cy.on('mouseover', 'edge', evt => showTooltip(evt, evt.target.data()));
