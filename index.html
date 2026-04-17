@@ -81,11 +81,24 @@
       background: #1f2937cc;
       border: 1px solid #374151;
       border-radius: 6px;
-      padding: 10px 14px;
       font-size: 0.75rem;
       backdrop-filter: blur(4px);
+      min-width: 160px;
     }
+    #legend-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      cursor: pointer;
+      user-select: none;
+      gap: 16px;
+    }
+    #legend-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280; }
+    #legend-toggle { background: none; border: none; color: #6b7280; font-size: 0.75rem; cursor: pointer; padding: 0; line-height: 1; }
+    #legend-body { padding: 0 14px 10px; }
     #legend h3 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280; margin-bottom: 8px; }
+    #legend h3:not(:first-child) { margin-top: 10px; }
     .leg-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
     .leg-line { width: 24px; height: 3px; border-radius: 2px; }
     .leg-dot  { width: 12px; height: 12px; border-radius: 2px; }
@@ -113,20 +126,26 @@
 </div>
 
 <div id="legend">
-  <h3>Governs edge (solid)</h3>
-  <div class="leg-row"><div class="leg-line" style="background:#4ade80"></div> positive utility</div>
-  <div class="leg-row"><div class="leg-line" style="background:#f87171"></div> negative utility</div>
-  <div class="leg-row"><div class="leg-line" style="background:#6b7280"></div> neutral utility</div>
-  <h3 style="margin-top:10px">Acts-on edge (dashed)</h3>
-  <div class="leg-row"><div class="leg-line" style="background:#4ade80;opacity:0.5"></div> positive utility</div>
-  <div class="leg-row"><div class="leg-line" style="background:#f87171;opacity:0.5"></div> negative utility</div>
-  <div class="leg-row"><div class="leg-line" style="background:#6b7280;opacity:0.5"></div> neutral utility</div>
-  <h3 style="margin-top:10px">Entity type</h3>
-  <div class="leg-row"><div class="leg-dot" style="background:#7c3aed"></div> game_authority</div>
-  <div class="leg-row"><div class="leg-dot" style="background:#1d4ed8"></div> player</div>
-  <div class="leg-row"><div class="leg-dot" style="background:#0f766e"></div> game_component</div>
-  <div class="leg-row"><div class="leg-dot" style="background:#92400e"></div> group</div>
-  <div class="leg-row"><div class="leg-dot" style="background:#374151"></div> other</div>
+  <div id="legend-header">
+    <span id="legend-title">Legend</span>
+    <button id="legend-toggle" aria-label="Toggle legend">▲</button>
+  </div>
+  <div id="legend-body">
+    <h3>Governs edge (solid)</h3>
+    <div class="leg-row"><div class="leg-line" style="background:#4ade80"></div> positive utility</div>
+    <div class="leg-row"><div class="leg-line" style="background:#f87171"></div> negative utility</div>
+    <div class="leg-row"><div class="leg-line" style="background:#6b7280"></div> neutral utility</div>
+    <h3>Acts-on edge (dashed)</h3>
+    <div class="leg-row"><div class="leg-line" style="background:#4ade80;opacity:0.5"></div> positive utility</div>
+    <div class="leg-row"><div class="leg-line" style="background:#f87171;opacity:0.5"></div> negative utility</div>
+    <div class="leg-row"><div class="leg-line" style="background:#6b7280;opacity:0.5"></div> neutral utility</div>
+    <h3>Entity type</h3>
+    <div class="leg-row"><div class="leg-dot" style="background:#7c3aed"></div> game_authority</div>
+    <div class="leg-row"><div class="leg-dot" style="background:#1d4ed8"></div> player</div>
+    <div class="leg-row"><div class="leg-dot" style="background:#0f766e"></div> game_component</div>
+    <div class="leg-row"><div class="leg-dot" style="background:#92400e"></div> group</div>
+    <div class="leg-row"><div class="leg-dot" style="background:#374151"></div> other</div>
+  </div>
 </div>
 
 <script>
@@ -410,6 +429,17 @@
 
   document.getElementById('ruleset-select')
     .addEventListener('change', e => load(e.target.value));
+
+  (function () {
+    const header = document.getElementById('legend-header');
+    const body   = document.getElementById('legend-body');
+    const btn    = document.getElementById('legend-toggle');
+    header.addEventListener('click', () => {
+      const collapsed = body.style.display === 'none';
+      body.style.display = collapsed ? '' : 'none';
+      btn.textContent   = collapsed ? '▲' : '▼';
+    });
+  })();
 
   load('rulesets/tic-tac-toe.json');
 </script>
