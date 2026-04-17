@@ -349,3 +349,16 @@ The binary approach (active/dimmed) is clean and legible. The design deliberatel
 
 **CLAUDE.md recommendations:**
 None this turn.
+
+---
+
+## 2026-04-17 — Entry 28
+
+**Summary:**
+Fixed the phase slider: node net utility labels and border colors were not updating when dragging the slider. The root cause was that `buildElements()` bakes net utility into node data once at load time. `applyPhaseFilter` only toggled edge visibility. Fix: store the expanded ruleset in `expandedData`, then on every slider move recompute net utility per node from only the rules active in the selected phase (or all rules for "All"), and push updated `label`, `baseLabel`, `netUtility`, and `borderColor` into each node's data. Pin state is preserved by checking `node.hasClass('pinned')` before rewriting the label.
+
+**Sentiments:**
+Obvious in hindsight — the utility numbers are the whole point of the phase filter. A phase that shows "Moderator governs Werewolf" edges dimmed but still shows Werewolf at +7 net utility is misleading. Now sliding to "night" immediately shows how the utility distribution shifts when only night-phase rules apply.
+
+**CLAUDE.md recommendations:**
+None this turn.
