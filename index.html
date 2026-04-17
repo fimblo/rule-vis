@@ -242,7 +242,14 @@
         }
       }));
 
-    return [...nodes, ...governEdges, ...actsOnEdges];
+    const connectedIds = new Set();
+    [...governEdges, ...actsOnEdges].forEach(e => {
+      connectedIds.add(e.data.source);
+      connectedIds.add(e.data.target);
+    });
+    const visibleNodes = nodes.filter(n => connectedIds.has(n.data.id));
+
+    return [...visibleNodes, ...governEdges, ...actsOnEdges];
   }
 
   let cy = null;
