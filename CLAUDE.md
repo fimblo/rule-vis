@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Status
 
-This project is in the **ideation/pre-implementation phase**. The only artifact is `prompt-system-visualisation.md`, a design document describing the vision. No build system, dependencies, or source code exist yet.
+Early prototype. The data model is defined, a tic-tac-toe ruleset exists as sample data, and a basic Cytoscape.js graph visualization is live on GitHub Pages.
 
 ## What This Project Is
 
@@ -37,6 +37,19 @@ A rule is a 6-tuple:
 **Rule types:** positive (option to do X), negative (may not do Y), atomic procedural (must use recipe Z), complex (combinations)
 
 **Utility:** relative weights (e.g., 1, -1) — not absolute units. One rule per source→target pair; a rule targeting 5 entities becomes 5 tuples.
+
+## Local Development
+
+No build step. Run a local server to avoid browser CORS restrictions when fetching JSON:
+
+```bash
+python3 -m http.server 8000
+# then open http://localhost:8000
+```
+
+**GitHub Pages:** The workflow in `.github/workflows/deploy.yml` deploys on every push to `main`. To activate, go to **Settings → Pages → Source** and select **GitHub Actions**.
+
+Sample rulesets live in `rulesets/`.
 
 ## Development Conventions
 
