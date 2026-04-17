@@ -323,3 +323,16 @@ Clean separation of concerns — the menu logic is now data-driven. The variant 
 
 **CLAUDE.md recommendations:**
 None this turn.
+
+---
+
+## 2026-04-17 — Entry 26
+
+**Summary:**
+Introduced cohort expansion to the schema (v0.4.0). An optional `cohorts` object at the top of each JSON file maps names to arrays of entity IDs. Any entity field in a rule can use `@cohort_name` to reference a cohort; `expandCohorts()` in the visualizer expands these at load time into one rule per member, with IDs like `r01_werewolf`. Only one cohort field per rule (first of subject/affected/authority wins — cross-products not supported). Rewrote `werewolf.json` from 32 rules to 9 logical rules, and `werewolf-diverse-utility.json` from 32 to 19 (more per-entity variation in utilities limits grouping). Bumped schema version to 0.4.0 across all files. Updated CLAUDE.md.
+
+**Sentiments:**
+The reduction is dramatic — werewolf.json lost 73% of its rule entries, purely from grouping. The logic is clean: cohorts are a JSON-level convenience, the renderer never sees them. The constraint of "one cohort field per rule" is a good restriction — it keeps the mental model simple and cross-products are almost certainly wrong for any realistic ruleset.
+
+**CLAUDE.md recommendations:**
+None this turn.
