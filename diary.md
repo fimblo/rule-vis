@@ -248,3 +248,15 @@ A simple but embarrassing process error. The diary is meant to be read top-to-bo
 Strengthen the diary instruction: "append each new entry at the end of diary.md — never insert before an existing entry."
 
 ---
+
+## 2026-04-17 — Entry 20
+
+**Summary:**
+Full terminology rename across the codebase (schema v0.2.0 → v0.3.0). Renamed JSON field names, JavaScript internal references, and documentation. The mapping: `source` → `authority` (who issues the rule), `target` → `subject` (who is subject to it), `object` → `affected` (who/what the action operates on). Rule types: `positive` → `permission`, `negative` → `prohibition`, `atomic_procedural` → `obligation`. Three commits: JSON rulesets, visualizer JS, CLAUDE.md. The historical design document (`prompt-system-visualisation.md`) was left untouched as requested.
+
+**Sentiments:**
+The naming conversation was worth having. `authority/subject/affected` is meaningfully better than `source/target/object` — it maps to governance and ethics rather than data-flow diagrams, which is closer to what the tool is actually modeling. `affected` in particular is a good find: neutral, humanizing, works equally well for a person receiving care and a coffee machine being used. The `permission/prohibition/obligation` rename for rule types is also cleaner — they're established terms in deontic logic, the formal study of rules and norms.
+
+**CLAUDE.md recommendations:**
+Already updated this turn.
+
