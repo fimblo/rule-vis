@@ -145,6 +145,19 @@ None this turn.
 
 ---
 
+## 2026-04-17 — Entry 13
+
+**Summary:**
+Added Munchkin (simplified) ruleset — 48 rules, 8 entities (4 players, Moderator, Dungeon Deck, Monster, Treasure). Key rules: kick open door (player→dungeon_deck), look for trouble (player→monster), wins/loses combat (player↔monster), help in combat (all 12 player pairs, both +1), hinder in combat (all 12 player pairs, hinderer +1 / target -1), charity (mandatory card draw-down), win at level 10. The 12×2 cross-player help/hinder rules create a full mesh between players — every player can both help and sabotage every other. Then implemented hover-to-highlight on nodes: all edges are dimmed to 0.12 opacity by default (both governs and acts-on now at the same level as requested), and hovering a node brings its connected edges to 0.9 opacity with a bright node border. The muted/hidden state from click-to-mute is unaffected.
+
+**Sentiments:**
+The Munchkin graph should be visually striking — 4 players fully connected in both cooperative and competitive directions. The hover highlight is a real usability improvement; with 48+ rules the default dim state is essential for readability. The combination of mute (click) and highlight (hover) gives good exploration tools.
+
+**CLAUDE.md recommendations:**
+None this turn.
+
+---
+
 ## 2026-04-17 — Entry 12
 
 **Summary:**
