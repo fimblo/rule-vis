@@ -156,9 +156,30 @@
   function buildElements(data) {
     const nameOf = Object.fromEntries(data.entities.map(e => [e.id, e.name]));
 
-    const nodes = data.entities.map(e => ({
-      data: { id: e.id, label: e.name, type: e.type, color: nodeColor(e.type) }
-    }));
+    const netAsTarget = {};
+    const netAsObject = {};
+    data.entities.forEach(e => { netAsTarget[e.id] = 0; netAsObject[e.id] = 0; });
+    data.rules.forEach(r => {
+      netAsTarget[r.target_entity] += r.target_utility;
+      if (r.object_entity != null) netAsObject[r.object_entity] += (r.object_utility ?? 0);
+    });
+
+    const nodes = data.entities.map(e => {
+      const net = (netAsTarget[e.id] ?? 0) + (netAsObject[e.id] ?? 0);
+      return {
+        data: {
+          id:           e.id,
+          label:        `${e.name}\n(${net > 0 ? '+' : ''}${net})`,
+          entityName:   e.name,
+          type:         e.type,
+          color:        nodeColor(e.type),
+          borderColor:  net > 0 ? '#4ade80' : net < 0 ? '#f87171' : '#6b7280',
+          netUtility:   net,
+          netAsTarget:  netAsTarget[e.id],
+          netAsObject:  netAsObject[e.id],
+        }
+      };
+    });
 
     const governEdges = data.rules.map(r => ({
       data: {
@@ -221,6 +242,18 @@
     </div>`;
   }
 
+  function showNodeTooltip(evt, d) {
+    ttName.textContent = d.entityName;
+    ttDesc.textContent = '';
+    ttType.textContent = d.type;
+    let rows = utilRow('net utility', d.netUtility);
+    if (d.netAsTarget !== 0) rows += utilRow('as governed', d.netAsTarget);
+    if (d.netAsObject !== 0) rows += utilRow('as object',   d.netAsObject);
+    ttUtilities.innerHTML = rows;
+    positionTooltip(evt.originalEvent);
+    tooltip.hidden = false;
+  }
+
   function showTooltip(evt, data) {
     ttName.textContent = data.rule_name;
     ttDesc.textContent = data.description || '';
@@ -272,9 +305,9 @@
             'text-max-width':    '90px',
             'shape':             'round-rectangle',
             'width':             100,
-            'height':            40,
+            'height':            50,
             'border-width':      2,
-            'border-color':      '#6b7280',
+            'border-color':      'data(borderColor)',
           }
         },
         {
@@ -364,10 +397,13 @@
       const node = evt.target;
       node.addClass('hover-highlight');
       node.connectedEdges().not('.hidden').addClass('hover-highlight');
+      showNodeTooltip(evt, node.data());
     });
+    cy.on('mousemove', 'node', evt => positionTooltip(evt.originalEvent));
     cy.on('mouseout', 'node', evt => {
       evt.target.removeClass('hover-highlight');
       evt.target.connectedEdges().removeClass('hover-highlight');
+      tooltip.hidden = true;
     });
 
     cy.on('mouseover', 'edge', evt => showTooltip(evt, evt.target.data()));
