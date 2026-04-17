@@ -158,6 +158,19 @@ None this turn.
 
 ---
 
+## 2026-04-17 — Entry 18
+
+**Summary:**
+Two features requested, implemented in three commits. (1) **Treasure data fix**: Treasure was an orphaned entity in munchkin.json — present in the entities list but unreferenced by any rule's `source_entity`, `target_entity`, or `object_entity`. Win-combat rules mentioned "treasure cards" in descriptions but the schema only supports one `object_entity` per rule (which was already used for Monster). Added four separate rules (r49-r52, one per player) — `player_N gains_treasure` with `object_entity: treasure, object_utility: -1` — connecting Treasure into the graph. (2) **Auto-hide isolated nodes**: added a filter in `buildElements` that removes any node with no connected edges before passing to Cytoscape. Future data gaps won't silently produce orphaned floating nodes. (3) **Y-axis stratification by net utility**: moved the cose layout out of the cytoscape() constructor into a separate `cy.layout().run()` call, hooked into `layoutstop`, and after the force layout settles, overrides each node's Y position to be proportional to its net utility (high utility = top, low utility = bottom), then calls `cy.fit()`. X positions from cose are preserved for horizontal distribution. The stratification only applies if there's a non-zero range across entities (avoids dividing by zero if all utilities are equal).
+
+**Sentiments:**
+The Y-stratification is the most visually meaningful addition yet. In Munchkin the players float to the top (they net benefit from many rules), the Moderator sits at 0 in the middle, and the game components (Monster, Dungeon Deck, Treasure) sink to the bottom (depleted by the rules). This instantly communicates the burden being placed on the shared resource layer — exactly the org bottleneck pattern the project was designed to surface. The user's intuition about wanting a "third dimension" led to a clean 2D solution.
+
+**CLAUDE.md recommendations:**
+Update project status to mention Y-axis stratification and isolated-node filtering.
+
+---
+
 ## 2026-04-17 — Entry 17
 
 **Summary:**
