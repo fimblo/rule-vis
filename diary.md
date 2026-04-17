@@ -92,3 +92,16 @@ The project is now publicly visible and shareable. Writing the README was a good
 None this turn — CLAUDE.md was updated this session and is current.
 
 ---
+
+## 2026-04-17 — Entry 8
+
+**Summary:**
+User corrected my interpretation of the TDD convention. Failing tests may be committed at any point — the only requirement is that the commit message notes it. The red-green cycle is fine but not mandatory. Updated CLAUDE.md accordingly.
+
+**Sentiments:**
+Good correction — my earlier wording was too prescriptive. The user's intent is about transparency in git history (so bisects are useful), not about enforcing a strict workflow. That's a more pragmatic and trusting stance.
+
+**CLAUDE.md recommendations:**
+None — just applied a correction.
+
+---
