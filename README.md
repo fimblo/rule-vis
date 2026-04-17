@@ -31,6 +31,6 @@ If you clone this repo and open it with Claude Code, it will read `CLAUDE.md` au
 
 A few things to know:
 - **Read the diary first.** `diary.md` captures the reasoning behind decisions that aren't obvious from the code.
-- **Write a diary entry at the end of every session.** The Stop hook in `.claude/settings.local.json` will remind you.
-- **Semantic commits, small and focused.** See `CLAUDE.md` for the full convention.
+- **Claude writes diary entries automatically.** It is instructed to append an entry at the end of every session. The Stop hook in `.claude/settings.local.json` reinforces this.
+- **Semantic commits, small and focused.** Claude handles commits; see `CLAUDE.md` for the convention.
 - **No build step.** Run `python3 -m http.server 8000` and open `localhost:8000`.
