@@ -158,6 +158,19 @@ None this turn.
 
 ---
 
+## 2026-04-17 — Entry 15
+
+**Summary:**
+Two interaction changes. (1) **Click-to-pin replacing click-to-mute**: clicking an entity now toggles a `pinned` state that persistently highlights its connected edges (bright, 0.9 opacity), instead of graying and hiding them. Hover still works as before (transient highlight). Both hover and pin use the same `hover-highlight`/`pin-highlight` CSS classes at 0.9 opacity. The muted/hidden class machinery and `updateEdgeVisibility()` were removed entirely. (2) **Collapsible legend**: the legend now has a header row ("LEGEND" label + ▲/▼ button) that toggles the body. Clicking anywhere on the header collapses or expands. On mobile the legend was consuming most of the viewport — minimized it reduces to a single header bar.
+
+**Sentiments:**
+The mute interaction was a natural first instinct but click-to-highlight is more exploratory — it lets you focus on a player without making the rest of the graph disappear. The collapsible legend is a small but real usability win on mobile. Both changes came out clean.
+
+**CLAUDE.md recommendations:**
+None this turn.
+
+---
+
 ## 2026-04-17 — Entry 14
 
 **Summary:**
