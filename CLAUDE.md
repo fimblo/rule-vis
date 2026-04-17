@@ -59,6 +59,8 @@ Sample rulesets live in `rulesets/`.
 
 A development diary is kept in `diary.md`. **Write a diary entry at the end of every conversation turn.** Each entry should include: date, turn number, summary of what happened, sentiments/observations, and any CLAUDE.md recommendations. The Stop hook in `.claude/settings.local.json` shows a systemMessage reminder after each turn.
 
+**Always append new entries to the end of `diary.md`. Never insert before an existing entry.**
+
 ## Development Conventions
 
 **TDD:** Failing tests may be committed — just note it in the commit message (e.g. `test: add failing test for X`). The red-green cycle is encouraged but not required.

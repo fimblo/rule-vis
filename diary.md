@@ -145,6 +145,19 @@ None this turn.
 
 ---
 
+## 2026-04-17 — Entry 12
+
+**Summary:**
+Added Werewolf as a second, richer ruleset. 5 players (Werewolf, Seer, Doctor, Villager A, Villager B) + Moderator + Village Vote entity. 32 rules covering: role secrecy, night elimination (werewolf → each non-werewolf via object_entity), seer inspection (asymmetric: inspecting werewolf is -1 for them, others 0), doctor protection (all +1, including unknowingly protecting the werewolf), day voting (all players funnel through Village Vote game_component), and win conditions per faction. Added optional `faction` field to entities (werewolf vs village). Village Vote acts as a shared bottleneck resource — exactly the kind of shared passive object discussed in entry 9.
+
+**Sentiments:**
+This ruleset is where the model starts to feel genuinely interesting. The doctor-protects-werewolf rule (positive object_utility for a player who is your adversary) creates a surprising edge that you wouldn't notice reading the rules. The Village Vote as shared resource mirrors the org bottleneck pattern. Eager to see it visualized.
+
+**CLAUDE.md recommendations:**
+The `faction` field on entities is worth documenting in CLAUDE.md — it's now in the wild even if the visualizer doesn't use it yet.
+
+---
+
 ## 2026-04-17 — Entry 13
 
 **Summary:**
@@ -152,58 +165,6 @@ Added Munchkin (simplified) ruleset — 48 rules, 8 entities (4 players, Moderat
 
 **Sentiments:**
 The Munchkin graph should be visually striking — 4 players fully connected in both cooperative and competitive directions. The hover highlight is a real usability improvement; with 48+ rules the default dim state is essential for readability. The combination of mute (click) and highlight (hover) gives good exploration tools.
-
-**CLAUDE.md recommendations:**
-None this turn.
-
----
-
-## 2026-04-17 — Entry 18
-
-**Summary:**
-Two features requested, implemented in three commits. (1) **Treasure data fix**: Treasure was an orphaned entity in munchkin.json — present in the entities list but unreferenced by any rule's `source_entity`, `target_entity`, or `object_entity`. Win-combat rules mentioned "treasure cards" in descriptions but the schema only supports one `object_entity` per rule (which was already used for Monster). Added four separate rules (r49-r52, one per player) — `player_N gains_treasure` with `object_entity: treasure, object_utility: -1` — connecting Treasure into the graph. (2) **Auto-hide isolated nodes**: added a filter in `buildElements` that removes any node with no connected edges before passing to Cytoscape. Future data gaps won't silently produce orphaned floating nodes. (3) **Y-axis stratification by net utility**: moved the cose layout out of the cytoscape() constructor into a separate `cy.layout().run()` call, hooked into `layoutstop`, and after the force layout settles, overrides each node's Y position to be proportional to its net utility (high utility = top, low utility = bottom), then calls `cy.fit()`. X positions from cose are preserved for horizontal distribution. The stratification only applies if there's a non-zero range across entities (avoids dividing by zero if all utilities are equal).
-
-**Sentiments:**
-The Y-stratification is the most visually meaningful addition yet. In Munchkin the players float to the top (they net benefit from many rules), the Moderator sits at 0 in the middle, and the game components (Monster, Dungeon Deck, Treasure) sink to the bottom (depleted by the rules). This instantly communicates the burden being placed on the shared resource layer — exactly the org bottleneck pattern the project was designed to surface. The user's intuition about wanting a "third dimension" led to a clean 2D solution.
-
-**CLAUDE.md recommendations:**
-Update project status to mention Y-axis stratification and isolated-node filtering.
-
----
-
-## 2026-04-17 — Entry 17
-
-**Summary:**
-User couldn't tell pinned from normal when hovering, because both show a white border (hover-highlight overrides pinned's border styling). Fix: store `baseLabel` in node data at build time, and update the `label` field dynamically on click — appending ` 📌` for pinned, restoring the base for muted/normal. Label content is independent of hover styling so the pin icon is always visible regardless of interaction state.
-
-**Sentiments:**
-Simple fix, right tool for the job. The label approach beats a background-color change (which would lose entity-type color) and beats a background-image SVG (overkill). The emoji is universally recognizable. Muted state doesn't need an icon — the gray+dim is already visually unambiguous.
-
-**CLAUDE.md recommendations:**
-None this turn.
-
----
-
-## 2026-04-17 — Entry 16
-
-**Summary:**
-Reworked the node interaction model after a UX design conversation. The user wanted three distinct goals: see the whole system, focus on a subset, and move clutter out of the way. This led to a 3-state click cycle per node: **normal** (edges dimmed) → **pinned** (edges persistently bright) → **muted** (node grayed, edges hidden) → back to normal. Hover is additive on top: temporarily brightens connected edges without disturbing the underlying state, and respects hidden edges (skips them). Edge conflict rule: if one endpoint is pinned and the other muted, the edge shows faintly at default opacity (neither hidden nor bright). Edge hover also brightens both endpoint nodes. One UX question (how hover interacts with a pinned subset) was left open by the user — implemented the additive approach as a testable default.
-
-**Sentiments:**
-The UX design conversation was productive. The user's three goals made the design crisp once articulated: explore, focus, dismiss. The 3-state cycle is a direct mapping to those goals. The conflict rule (pinned wins over muted, but only faintly) is a reasonable default — shows the relationship exists without emphasizing it. Curious how the user will respond to the additive hover; it might feel like too much information at once when many things are pinned.
-
-**CLAUDE.md recommendations:**
-Worth updating the project status to mention the 3-state interaction model — it's a core UX concept now.
-
----
-
-## 2026-04-17 — Entry 15
-
-**Summary:**
-Two interaction changes. (1) **Click-to-pin replacing click-to-mute**: clicking an entity now toggles a `pinned` state that persistently highlights its connected edges (bright, 0.9 opacity), instead of graying and hiding them. Hover still works as before (transient highlight). Both hover and pin use the same `hover-highlight`/`pin-highlight` CSS classes at 0.9 opacity. The muted/hidden class machinery and `updateEdgeVisibility()` were removed entirely. (2) **Collapsible legend**: the legend now has a header row ("LEGEND" label + ▲/▼ button) that toggles the body. Clicking anywhere on the header collapses or expands. On mobile the legend was consuming most of the viewport — minimized it reduces to a single header bar.
-
-**Sentiments:**
-The mute interaction was a natural first instinct but click-to-highlight is more exploratory — it lets you focus on a player without making the rest of the graph disappear. The collapsible legend is a small but real usability win on mobile. Both changes came out clean.
 
 **CLAUDE.md recommendations:**
 None this turn.
@@ -223,15 +184,67 @@ Already applied this turn — project status and diary convention are now curren
 
 ---
 
-## 2026-04-17 — Entry 12
+## 2026-04-17 — Entry 15
 
 **Summary:**
-Added Werewolf as a second, richer ruleset. 5 players (Werewolf, Seer, Doctor, Villager A, Villager B) + Moderator + Village Vote entity. 32 rules covering: role secrecy, night elimination (werewolf → each non-werewolf via object_entity), seer inspection (asymmetric: inspecting werewolf is -1 for them, others 0), doctor protection (all +1, including unknowingly protecting the werewolf), day voting (all players funnel through Village Vote game_component), and win conditions per faction. Added optional `faction` field to entities (werewolf vs village). Village Vote acts as a shared bottleneck resource — exactly the kind of shared passive object discussed in entry 9.
+Two interaction changes. (1) **Click-to-pin replacing click-to-mute**: clicking an entity now toggles a `pinned` state that persistently highlights its connected edges (bright, 0.9 opacity), instead of graying and hiding them. Hover still works as before (transient highlight). Both hover and pin use the same `hover-highlight`/`pin-highlight` CSS classes at 0.9 opacity. The muted/hidden class machinery and `updateEdgeVisibility()` were removed entirely. (2) **Collapsible legend**: the legend now has a header row ("LEGEND" label + ▲/▼ button) that toggles the body. Clicking anywhere on the header collapses or expands. On mobile the legend was consuming most of the viewport — minimized it reduces to a single header bar.
 
 **Sentiments:**
-This ruleset is where the model starts to feel genuinely interesting. The doctor-protects-werewolf rule (positive object_utility for a player who is your adversary) creates a surprising edge that you wouldn't notice reading the rules. The Village Vote as shared resource mirrors the org bottleneck pattern. Eager to see it visualized.
+The mute interaction was a natural first instinct but click-to-highlight is more exploratory — it lets you focus on a player without making the rest of the graph disappear. The collapsible legend is a small but real usability win on mobile. Both changes came out clean.
 
 **CLAUDE.md recommendations:**
-The `faction` field on entities is worth documenting in CLAUDE.md — it's now in the wild even if the visualizer doesn't use it yet.
+None this turn.
+
+---
+
+## 2026-04-17 — Entry 16
+
+**Summary:**
+Reworked the node interaction model after a UX design conversation. The user wanted three distinct goals: see the whole system, focus on a subset, and move clutter out of the way. This led to a 3-state click cycle per node: **normal** (edges dimmed) → **pinned** (edges persistently bright) → **muted** (node grayed, edges hidden) → back to normal. Hover is additive on top: temporarily brightens connected edges without disturbing the underlying state, and respects hidden edges (skips them). Edge conflict rule: if one endpoint is pinned and the other muted, the edge shows faintly at default opacity (neither hidden nor bright). Edge hover also brightens both endpoint nodes. One UX question (how hover interacts with a pinned subset) was left open by the user — implemented the additive approach as a testable default.
+
+**Sentiments:**
+The UX design conversation was productive. The user's three goals made the design crisp once articulated: explore, focus, dismiss. The 3-state cycle is a direct mapping to those goals. The conflict rule (pinned wins over muted, but only faintly) is a reasonable default — shows the relationship exists without emphasizing it. Curious how the user will respond to the additive hover; it might feel like too much information at once when many things are pinned.
+
+**CLAUDE.md recommendations:**
+Worth updating the project status to mention the 3-state interaction model — it's a core UX concept now.
+
+---
+
+## 2026-04-17 — Entry 17
+
+**Summary:**
+User couldn't tell pinned from normal when hovering, because both show a white border (hover-highlight overrides pinned's border styling). Fix: store `baseLabel` in node data at build time, and update the `label` field dynamically on click — appending ` 📌` for pinned, restoring the base for muted/normal. Label content is independent of hover styling so the pin icon is always visible regardless of interaction state.
+
+**Sentiments:**
+Simple fix, right tool for the job. The label approach beats a background-color change (which would lose entity-type color) and beats a background-image SVG (overkill). The emoji is universally recognizable. Muted state doesn't need an icon — the gray+dim is already visually unambiguous.
+
+**CLAUDE.md recommendations:**
+None this turn.
+
+---
+
+## 2026-04-17 — Entry 18
+
+**Summary:**
+Two features requested, implemented in three commits. (1) **Treasure data fix**: Treasure was an orphaned entity in munchkin.json — present in the entities list but unreferenced by any rule's `source_entity`, `target_entity`, or `object_entity`. Win-combat rules mentioned "treasure cards" in descriptions but the schema only supports one `object_entity` per rule (which was already used for Monster). Added four separate rules (r49-r52, one per player) — `player_N gains_treasure` with `object_entity: treasure, object_utility: -1` — connecting Treasure into the graph. (2) **Auto-hide isolated nodes**: added a filter in `buildElements` that removes any node with no connected edges before passing to Cytoscape. Future data gaps won't silently produce orphaned floating nodes. (3) **Y-axis stratification by net utility**: moved the cose layout out of the cytoscape() constructor into a separate `cy.layout().run()` call, hooked into `layoutstop`, and after the force layout settles, overrides each node's Y position to be proportional to its net utility (high utility = top, low utility = bottom), then calls `cy.fit()`. X positions from cose are preserved for horizontal distribution. The stratification only applies if there's a non-zero range across entities (avoids dividing by zero if all utilities are equal).
+
+**Sentiments:**
+The Y-stratification is the most visually meaningful addition yet. In Munchkin the players float to the top (they net benefit from many rules), the Moderator sits at 0 in the middle, and the game components (Monster, Dungeon Deck, Treasure) sink to the bottom (depleted by the rules). This instantly communicates the burden being placed on the shared resource layer — exactly the org bottleneck pattern the project was designed to surface. The user's intuition about wanting a "third dimension" led to a clean 2D solution.
+
+**CLAUDE.md recommendations:**
+Update project status to mention Y-axis stratification and isolated-node filtering.
+
+---
+
+## 2026-04-17 — Entry 19
+
+**Summary:**
+Diary entries were out of order — each new entry had been inserted before the previous one rather than appended after it, leaving entries 12–18 in reverse/scrambled order. Reordered the tail of diary.md so entries run 1 → 2 → … → 18 → 19 in chronological sequence. Also noted the root cause so it isn't repeated: new entries must be appended to the end of the file, not prepended before the previous entry's heading.
+
+**Sentiments:**
+A simple but embarrassing process error. The diary is meant to be read top-to-bottom as a timeline; out-of-order entries undermine that entirely. Fixed now.
+
+**CLAUDE.md recommendations:**
+Strengthen the diary instruction: "append each new entry at the end of diary.md — never insert before an existing entry."
 
 ---
