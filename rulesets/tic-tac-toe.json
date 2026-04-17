@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.1.0",
+  "schema_version": "0.2.0",
   "ruleset": {
     "name": "Tic-Tac-Toe",
     "description": "Two players take turns marking spaces in a 3×3 grid. The player who places three marks in a row, column, or diagonal wins.",
@@ -60,6 +60,8 @@
       "target_entity": "player_x",
       "source_utility": 0,
       "target_utility": 1,
+      "object_entity": "board",
+      "object_utility": -1,
       "description": "Player X has the option to mark any unoccupied cell on the board"
     },
     {
@@ -70,6 +72,8 @@
       "target_entity": "player_o",
       "source_utility": 0,
       "target_utility": 1,
+      "object_entity": "board",
+      "object_utility": -1,
       "description": "Player O has the option to mark any unoccupied cell on the board"
     },
     {
@@ -80,6 +84,8 @@
       "target_entity": "player_x",
       "source_utility": 0,
       "target_utility": -1,
+      "object_entity": "board",
+      "object_utility": 0,
       "description": "Player X may not mark a cell that is already occupied"
     },
     {
@@ -90,6 +96,8 @@
       "target_entity": "player_o",
       "source_utility": 0,
       "target_utility": -1,
+      "object_entity": "board",
+      "object_utility": 0,
       "description": "Player O may not mark a cell that is already occupied"
     },
     {
@@ -100,6 +108,8 @@
       "target_entity": "player_x",
       "source_utility": 0,
       "target_utility": 1,
+      "object_entity": "board",
+      "object_utility": 0,
       "description": "Player X wins if they complete three consecutive marks in a row, column, or diagonal"
     },
     {
@@ -110,6 +120,8 @@
       "target_entity": "player_o",
       "source_utility": 0,
       "target_utility": 1,
+      "object_entity": "board",
+      "object_utility": 0,
       "description": "Player O wins if they complete three consecutive marks in a row, column, or diagonal"
     },
     {
@@ -120,6 +132,8 @@
       "target_entity": "player_x",
       "source_utility": 0,
       "target_utility": 1,
+      "object_entity": "board",
+      "object_utility": 0,
       "description": "If Player X achieves three in a row, play must stop — the game is over"
     },
     {
@@ -130,6 +144,8 @@
       "target_entity": "player_o",
       "source_utility": 0,
       "target_utility": 1,
+      "object_entity": "board",
+      "object_utility": 0,
       "description": "If Player O achieves three in a row, play must stop — the game is over"
     },
     {
@@ -140,6 +156,8 @@
       "target_entity": "player_x",
       "source_utility": 0,
       "target_utility": 0,
+      "object_entity": "board",
+      "object_utility": 0,
       "description": "If the board is full and no player has three in a row, the game ends in a draw"
     },
     {
@@ -150,6 +168,8 @@
       "target_entity": "player_o",
       "source_utility": 0,
       "target_utility": 0,
+      "object_entity": "board",
+      "object_utility": 0,
       "description": "If the board is full and no player has three in a row, the game ends in a draw"
     }
   ]
