@@ -362,3 +362,16 @@ Obvious in hindsight — the utility numbers are the whole point of the phase fi
 
 **CLAUDE.md recommendations:**
 None this turn.
+
+---
+
+## 2026-04-17 — Entry 29
+
+**Summary:**
+Added phases to Munchkin and Werewolf (Diverse Utility). Munchkin gets four phases matching its turn structure: `door → combat → loot → end_of_turn`. Win conditions have no phase (always active). Also took the opportunity to refactor Munchkin with cohorts: 52 individual rules collapsed to 15 logical rules. The help/hinder rules (which are cross-player, not player→moderator) used per-player cohorts (`p1_others`, `p2_others`, etc.) — 12 help + 12 hinder rules became 4 + 4. Werewolf (Diverse Utility) gets the same `night/day` phase split as the base Werewolf: r05–r11 night, r12–r17 day, secrecy and win conditions unphased. Both files bumped to schema v0.5.0.
+
+**Sentiments:**
+The Munchkin refactor is the more satisfying half of this commit. 52 → 15 rules with no loss of information, and the phase annotations now make the turn structure legible directly from the JSON. The slider on Munchkin is genuinely informative — the combat phase reveals the dense player-to-player help/hinder web, while the door and loot phases show isolated player→deck/treasure interactions.
+
+**CLAUDE.md recommendations:**
+None this turn.
