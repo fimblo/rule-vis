@@ -53,3 +53,16 @@ The diary idea is a nice touch — it turns the AI collaboration itself into a d
 None this turn.
 
 ---
+
+## 2026-04-17 — Entry 5
+
+**Summary:**
+User established three development conventions: TDD with red-green commits (failing tests may be committed, must be noted in title), small semantic commits that tell a story, and subject lines under 80 characters. These were added to CLAUDE.md. Then created the first concrete artifact: `rulesets/tic-tac-toe.json` — 14 rules across 4 entities (rulebook, player_x, player_o, board), following the 6-tuple data model. Rules per-player, one target entity per tuple as the design doc specifies. Placed in `rulesets/` directory to establish a naming pattern for future rulesets.
+
+**Sentiments:**
+Good momentum. The conventions are sensible and well-considered — semantic commits + TDD is a sign the user cares about code quality and traceability. The tic-tac-toe JSON came together cleanly; the data model held up well for a simple symmetric game. One thing I notice: all `source_utility` values are 0 (the rulebook has no self-interest). This will be more interesting when we model rules between players, or orgs where the rule-creator does benefit.
+
+**CLAUDE.md recommendations:**
+Consider noting that `rulesets/` is the conventional home for sample/test ruleset JSON files. Also: a JSON schema file for the rule tuple format would be worth adding once the model stabilizes — it would serve as the formal contract between translator and visualizer.
+
+---
