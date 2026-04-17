@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Status
 
-Early prototype. The data model is defined, a tic-tac-toe ruleset exists as sample data, and a basic Cytoscape.js graph visualization is live on GitHub Pages.
+Early prototype. The data model is defined (schema v0.2.0), three rulesets exist (tic-tac-toe, Werewolf, Munchkin simplified), and an interactive Cytoscape.js visualizer is live on GitHub Pages. Features so far: hover-to-highlight, click-to-mute nodes, edge tooltips with per-party utility, net utility per node (border color + hover tooltip), force-directed layout.
 
 ## What This Project Is
 
@@ -54,6 +54,10 @@ python3 -m http.server 8000
 **GitHub Pages:** The workflow in `.github/workflows/deploy.yml` deploys on every push to `main`. To activate, go to **Settings → Pages → Source** and select **GitHub Actions**.
 
 Sample rulesets live in `rulesets/`.
+
+## Development Diary
+
+A development diary is kept in `diary.md`. **Write a diary entry at the end of every conversation turn.** Each entry should include: date, turn number, summary of what happened, sentiments/observations, and any CLAUDE.md recommendations. The Stop hook in `.claude/settings.local.json` shows a systemMessage reminder after each turn.
 
 ## Development Conventions
 
