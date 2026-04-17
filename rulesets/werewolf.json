@@ -2,7 +2,7 @@
   "schema_version": "0.3.0",
   "ruleset": {
     "name": "Werewolf",
-    "description": "A social deduction game for 5 players. Villagers try to find and eliminate the Werewolf by majority vote. The Werewolf secretly eliminates one villager each night. The Seer and Doctor give the village extra tools.",
+    "description": "## Werewolf\n\nSocial deduction game for 5 players. Two factions compete in alternating night/day cycles.\n\n**Factions:**\n- **Village** — Seer, Doctor, and two Villagers\n- **Werewolf** — one hidden wolf\n\n**Goal:**\n- Village wins by eliminating the Werewolf through majority vote\n- Werewolf wins when it equals or outnumbers surviving villagers\n\n**Roles:**\n- *Werewolf* — secretly eliminates one player each night\n- *Seer* — inspects one player's role each night\n- *Doctor* — protects one player from elimination each night\n- *Villagers* — vote only; no night action\n\nAll roles are secret. No player may reveal their role.",
     "source": "Traditional / public domain"
   },
   "entities": [
