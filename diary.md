@@ -79,3 +79,16 @@ A significant milestone — the project now has something to show. The GitHub Pa
 Add note that `rulesets/` stores sample data files. Add a section on how to run locally (`python3 -m http.server` then open `localhost:8000`). Note that GitHub Pages deployment requires "GitHub Actions" to be selected as the Pages source in repo settings.
 
 ---
+
+## 2026-04-17 — Entry 7
+
+**Summary:**
+User linked local repo to `git@github.com:fimblo/rule-vis.git` and pushed all commits. Then requested a local dev section in CLAUDE.md and a README.md focused on what the project is (without overpromising) and a reference to the diary for potential collaborators. CLAUDE.md status section updated to reflect current reality (prototype, not ideation). README written to be honest about the current state, point to the live GitHub Pages URL, and explain the AI-assisted collaborative development process via the diary.
+
+**Sentiments:**
+The project is now publicly visible and shareable. Writing the README was a good forcing function — it required honest scoping. "Early prototype" is the right framing: it's real, it runs, but it's not yet useful for the primary use case. The diary reference in the README is a nice touch; it makes the process transparent without overwhelming newcomers.
+
+**CLAUDE.md recommendations:**
+None this turn — CLAUDE.md was updated this session and is current.
+
+---
