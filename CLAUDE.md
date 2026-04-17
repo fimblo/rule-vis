@@ -53,7 +53,7 @@ Sample rulesets live in `rulesets/`.
 
 ## Development Conventions
 
-**TDD (red-green):** Write a failing test first, commit it (title must note it fails, e.g. `test: add failing test for X`), then make it pass in a follow-up commit.
+**TDD:** Failing tests may be committed — just note it in the commit message (e.g. `test: add failing test for X`). The red-green cycle is encouraged but not required.
 
 **Commit style:** Semantic commits, subject line under 80 characters. Commits should be small and tell a story — no large all-in-one commits.
 
