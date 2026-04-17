@@ -209,21 +209,22 @@
     <div class="leg-row"><div class="leg-line" style="background:#4ade80;opacity:0.5"></div> positive utility</div>
     <div class="leg-row"><div class="leg-line" style="background:#f87171;opacity:0.5"></div> negative utility</div>
     <div class="leg-row"><div class="leg-line" style="background:#6b7280;opacity:0.5"></div> neutral utility</div>
-    <h3>Entity type</h3>
-    <div class="leg-row"><div class="leg-dot" style="background:#7c3aed"></div> game_authority</div>
-    <div class="leg-row"><div class="leg-dot" style="background:#1d4ed8"></div> player</div>
-    <div class="leg-row"><div class="leg-dot" style="background:#0f766e"></div> game_component</div>
-    <div class="leg-row"><div class="leg-dot" style="background:#92400e"></div> group</div>
-    <div class="leg-row"><div class="leg-dot" style="background:#374151"></div> other</div>
+    <div id="legend-entities"></div>
   </div>
 </div>
 
 <script>
   const NODE_COLORS = {
+    // game types
     game_authority: '#7c3aed',
     player:         '#1d4ed8',
     game_component: '#0f766e',
     group:          '#92400e',
+    // org types
+    authority:      '#7c3aed',
+    team:           '#1e40af',
+    role:           '#0891b2',
+    process:        '#166534',
   };
 
   function nodeColor(type) {
@@ -454,6 +455,15 @@
     });
   }
 
+  function updateLegendEntities(entities) {
+    const types = [...new Set(entities.map(e => e.type))].sort();
+    document.getElementById('legend-entities').innerHTML =
+      '<h3>Entity type</h3>' +
+      types.map(t =>
+        `<div class="leg-row"><div class="leg-dot" style="background:${nodeColor(t)}"></div> ${t.replace(/_/g, '\u00a0')}</div>`
+      ).join('');
+  }
+
   function setupPhaseBar(phases) {
     phaseBar.hidden = !phases || phases.length === 0;
     if (!phases || phases.length === 0) return;
@@ -682,6 +692,7 @@
 
     layout.run();
     setupPhaseBar(data.phases ?? null);
+    updateLegendEntities(data.entities);
   }
 
   async function load(path) {
@@ -708,6 +719,12 @@
       game: 'Munchkin (Simplified)',
       variants: [
         { label: 'Standard', path: 'rulesets/munchkin.json' }
+      ]
+    },
+    {
+      game: 'Teal Engineering Org',
+      variants: [
+        { label: 'Standard', path: 'rulesets/teal-engineering.json' }
       ]
     }
   ];
