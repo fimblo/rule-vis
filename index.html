@@ -338,6 +338,15 @@
           style: { 'border-color': '#f9fafb', 'border-width': 3 }
         },
         {
+          selector: 'node.muted',
+          style: {
+            'background-color': '#374151',
+            'border-color':     '#4b5563',
+            'color':            '#6b7280',
+            'opacity':          0.45,
+          }
+        },
+        {
           selector: 'node.hover-highlight',
           style: { 'border-color': '#f9fafb', 'border-width': 3 }
         },
@@ -362,7 +371,15 @@
           }
         },
         {
-          selector: 'edge.hover-highlight, edge.pin-highlight',
+          selector: 'edge.edge-bright',
+          style: { 'opacity': 0.9 }
+        },
+        {
+          selector: 'edge.edge-hidden',
+          style: { 'display': 'none' }
+        },
+        {
+          selector: 'edge.hover-highlight',
           style: { 'opacity': 0.9 }
         },
         {
@@ -390,21 +407,38 @@
       }
     });
 
+    function updateEdges() {
+      cy.edges().forEach(edge => {
+        const anyPinned = edge.source().hasClass('pinned') || edge.target().hasClass('pinned');
+        const anyMuted  = edge.source().hasClass('muted')  || edge.target().hasClass('muted');
+        edge.removeClass('edge-bright edge-hidden');
+        if (anyMuted && !anyPinned) {
+          edge.addClass('edge-hidden');
+        } else if (anyPinned && !anyMuted) {
+          edge.addClass('edge-bright');
+        }
+        // pinned + muted conflict, or neither → dim (default 0.12)
+      });
+    }
+
     cy.on('tap', 'node', evt => {
       const node = evt.target;
-      if (node.hasClass('pinned')) {
+      tooltip.hidden = true;
+      if (node.hasClass('muted')) {
+        node.removeClass('muted');
+      } else if (node.hasClass('pinned')) {
         node.removeClass('pinned');
-        node.connectedEdges().removeClass('pin-highlight');
+        node.addClass('muted');
       } else {
         node.addClass('pinned');
-        node.connectedEdges().addClass('pin-highlight');
       }
+      updateEdges();
     });
 
     cy.on('mouseover', 'node', evt => {
       const node = evt.target;
       node.addClass('hover-highlight');
-      node.connectedEdges().addClass('hover-highlight');
+      node.connectedEdges().not('.edge-hidden').addClass('hover-highlight');
       showNodeTooltip(evt, node.data());
     });
     cy.on('mousemove', 'node', evt => positionTooltip(evt.originalEvent));
@@ -414,11 +448,23 @@
       tooltip.hidden = true;
     });
 
-    cy.on('mouseover', 'edge', evt => showTooltip(evt, evt.target.data()));
+    cy.on('mouseover', 'edge', evt => {
+      const edge = evt.target;
+      edge.addClass('hover-highlight');
+      edge.source().addClass('hover-highlight');
+      edge.target().addClass('hover-highlight');
+      showTooltip(evt, edge.data());
+    });
     cy.on('mousemove', 'edge', evt => positionTooltip(evt.originalEvent));
-    cy.on('mouseout',  'edge', ()  => { tooltip.hidden = true; });
-    cy.on('tap',       'edge', evt => showTooltip(evt, evt.target.data()));
-    cy.on('tap',       'core', ()  => { tooltip.hidden = true; });
+    cy.on('mouseout', 'edge', evt => {
+      const edge = evt.target;
+      edge.removeClass('hover-highlight');
+      edge.source().removeClass('hover-highlight');
+      edge.target().removeClass('hover-highlight');
+      tooltip.hidden = true;
+    });
+    cy.on('tap', 'edge', evt => showTooltip(evt, evt.target.data()));
+    cy.on('tap', 'core', ()  => { tooltip.hidden = true; });
   }
 
   async function load(path) {
