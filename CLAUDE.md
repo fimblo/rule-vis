@@ -24,9 +24,11 @@ A general-purpose tool for translating human-readable rule sets into a structure
 
 ## Core Data Model
 
-A rule is a 6-tuple:
+Schema version: **0.3.0**
+
+A rule is a tuple:
 ```
-(rule_name, rule_type, source_entity, target_entity, source_utility, target_utility)
+(rule_name, rule_type, authority_entity, subject_entity, authority_utility, subject_utility)
 ```
 
 **Entity:**
@@ -34,13 +36,21 @@ A rule is a 6-tuple:
 (name, type)   # e.g., ("Bob", "person") or ("Engineering Team", "group")
 ```
 
-**Rule types:** positive (option to do X), negative (may not do Y), atomic procedural (must use recipe Z), complex (combinations)
+**Field roles:**
+- `authority_entity` — who issues or enforces the rule (e.g. Moderator, Rulebook, HR policy)
+- `subject_entity` — who is subject to the rule; their behaviour is constrained, permitted, or required
+- `affected_entity` *(optional)* — who or what is acted upon. Separates the subject (who must comply) from the passive entity the action operates on — a shared spreadsheet, a game board, another person receiving care. `affected_utility` captures the impact on them.
+- `authority_utility` / `subject_utility` / `affected_utility` — relative weights (e.g. 1, −1, 0), not absolute units.
 
-**Utility:** relative weights (e.g., 1, -1) — not absolute units. One rule per source→target pair; a rule targeting 5 entities becomes 5 tuples.
+**Rule types:**
+- `permission` — subject may do X
+- `prohibition` — subject may not do Y
+- `obligation` — subject must follow procedure Z
+- `complex` — combinations (not yet used)
+
+One rule per authority→subject pair; a rule applying to 5 subjects becomes 5 tuples.
 
 `faction` is an optional entity field (string or null) grouping entities into teams — e.g. `"village"` vs `"werewolf"`. Not yet visualized but present in data.
-
-`object_entity` and `object_utility` are optional fields that separate *the governed entity* (who must comply) from *the object of the action* (what the rule is about). These are the same entity for agent-to-agent rules, but differ when a passive resource is involved — a shared spreadsheet, a deployment pipeline, a game board. `object_utility` captures the cost or load imposed on that resource.
 
 ## Local Development
 
