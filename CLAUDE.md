@@ -50,6 +50,8 @@ A rule is a tuple:
 
 **Cohorts (v0.4.0):** An optional top-level `cohorts` object maps names to arrays of entity IDs. Any entity field in a rule may reference a cohort with `@cohort_name`. The visualizer expands each cohort reference into one rule per member at load time, generating IDs like `r01_werewolf`. Only one cohort reference per rule is supported (first of subject, affected, authority wins). Use cohorts to avoid repeating identical rules across multiple entities.
 
+**Phases (v0.5.0):** An optional top-level `phases` array defines an ordered list of named phases (e.g. `["night", "day"]` or `["Q1", "Q2", "Q3", "Q4"]`). Individual rules may carry an optional `"phase"` string field matching one of those names. Rules with no `phase` field are always active. When a ruleset defines phases, the visualizer shows a slider below the header; selecting a phase dims all edges whose rule belongs to a different phase. Rules without a phase are never dimmed.
+
 `faction` is an optional entity field (string or null) grouping entities into teams — e.g. `"village"` vs `"werewolf"`. Not yet visualized but present in data.
 
 ## Local Development
