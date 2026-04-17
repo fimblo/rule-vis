@@ -100,6 +100,43 @@
     .neg { background: #7f1d1d; color: #fca5a5; }
     .neu { background: #374151; color: #9ca3af; }
 
+    #phase-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 16px;
+      background: #1f2937;
+      border-bottom: 1px solid #374151;
+      flex-shrink: 0;
+    }
+    #phase-bar[hidden] { display: none; }
+    #phase-bar label { font-size: 0.75rem; color: #6b7280; white-space: nowrap; }
+    #phase-track {
+      position: relative;
+      flex: 1;
+      max-width: 480px;
+    }
+    #phase-slider {
+      width: 100%;
+      accent-color: #6366f1;
+      cursor: pointer;
+    }
+    #phase-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2px;
+    }
+    #phase-labels span {
+      font-size: 0.7rem;
+      color: #6b7280;
+      text-align: center;
+      flex: 1;
+    }
+    #phase-labels span.active-phase {
+      color: #a5b4fc;
+      font-weight: 600;
+    }
+
     #legend {
       position: fixed;
       bottom: 16px;
@@ -140,6 +177,14 @@
 </header>
 
 <div id="ruleset-desc" hidden></div>
+
+<div id="phase-bar" hidden>
+  <label for="phase-slider">Phase</label>
+  <div id="phase-track">
+    <input type="range" id="phase-slider" min="0" value="0" step="1">
+    <div id="phase-labels"></div>
+  </div>
+</div>
 
 <div id="cy"></div>
 
@@ -259,14 +304,15 @@
         rule_name:        r.rule_name,
         rule_type:        r.rule_type,
         description:      r.description,
+        phase:            r.phase ?? null,
         color:            edgeColor(r.subject_utility),
         edgeKind:         'governs',
-        authorityName:       nameOf[r.authority_entity],
-        subjectName:       nameOf[r.subject_entity],
-        authorityUtility:    r.authority_utility,
-        subjectUtility:    r.subject_utility,
-        affectedName:       r.affected_entity ? nameOf[r.affected_entity] : null,
-        affectedUtility:    r.affected_utility ?? null,
+        authorityName:    nameOf[r.authority_entity],
+        subjectName:      nameOf[r.subject_entity],
+        authorityUtility: r.authority_utility,
+        subjectUtility:   r.subject_utility,
+        affectedName:     r.affected_entity ? nameOf[r.affected_entity] : null,
+        affectedUtility:  r.affected_utility ?? null,
       }
     }));
 
@@ -280,14 +326,15 @@
           rule_name:        r.rule_name,
           rule_type:        r.rule_type,
           description:      r.description,
+          phase:            r.phase ?? null,
           color:            edgeColor(r.affected_utility),
           edgeKind:         'acts-on',
-          authorityName:       nameOf[r.authority_entity],
-          subjectName:       nameOf[r.subject_entity],
-          authorityUtility:    r.authority_utility,
-          subjectUtility:    r.subject_utility,
-          affectedName:       nameOf[r.affected_entity],
-          affectedUtility:    r.affected_utility,
+          authorityName:    nameOf[r.authority_entity],
+          subjectName:      nameOf[r.subject_entity],
+          authorityUtility: r.authority_utility,
+          subjectUtility:   r.subject_utility,
+          affectedName:     nameOf[r.affected_entity],
+          affectedUtility:  r.affected_utility,
         }
       }));
 
@@ -364,6 +411,33 @@
 
   rulesetNameEl.addEventListener('mouseenter', () => { rulesetDescEl.hidden = false; });
   rulesetNameEl.addEventListener('mouseleave', () => { rulesetDescEl.hidden = true; });
+
+  const phaseBar    = document.getElementById('phase-bar');
+  const phaseSlider = document.getElementById('phase-slider');
+  const phaseLabels = document.getElementById('phase-labels');
+
+  function applyPhaseFilter(phaseIdx, phases) {
+    const active = phaseIdx === 0 ? null : phases[phaseIdx - 1];
+    cy.edges().forEach(edge => {
+      const ep = edge.data('phase');
+      const inactive = active !== null && ep !== null && ep !== active;
+      edge.toggleClass('phase-inactive', inactive);
+    });
+    phaseLabels.querySelectorAll('span').forEach((s, i) => {
+      s.classList.toggle('active-phase', i === phaseIdx);
+    });
+  }
+
+  function setupPhaseBar(phases) {
+    phaseBar.hidden = !phases || phases.length === 0;
+    if (!phases || phases.length === 0) return;
+    phaseSlider.max   = phases.length;
+    phaseSlider.value = 0;
+    phaseLabels.innerHTML = ['All', ...phases]
+      .map((p, i) => `<span${i === 0 ? ' class="active-phase"' : ''}>${p}</span>`)
+      .join('');
+    phaseSlider.oninput = e => applyPhaseFilter(Number(e.target.value), phases);
+  }
 
   function render(data) {
     rulesetNameEl.textContent = data.ruleset?.name ?? '';
@@ -450,6 +524,10 @@
         {
           selector: 'edge:selected',
           style: { 'width': 4, 'opacity': 1 }
+        },
+        {
+          selector: 'edge.phase-inactive',
+          style: { 'opacity': 0.04 }
         },
       ],
 
@@ -576,6 +654,7 @@
     });
 
     layout.run();
+    setupPhaseBar(data.phases ?? null);
   }
 
   async function load(path) {
