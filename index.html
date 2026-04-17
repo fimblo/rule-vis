@@ -185,10 +185,12 @@
 
     const nodes = data.entities.map(e => {
       const net = (netAsTarget[e.id] ?? 0) + (netAsObject[e.id] ?? 0);
+      const baseLabel = `${e.name}\n(${net > 0 ? '+' : ''}${net})`;
       return {
         data: {
           id:           e.id,
-          label:        `${e.name}\n(${net > 0 ? '+' : ''}${net})`,
+          label:        baseLabel,
+          baseLabel:    baseLabel,
           entityName:   e.name,
           type:         e.type,
           color:        nodeColor(e.type),
@@ -424,13 +426,17 @@
     cy.on('tap', 'node', evt => {
       const node = evt.target;
       tooltip.hidden = true;
+      const base = node.data('baseLabel');
       if (node.hasClass('muted')) {
         node.removeClass('muted');
+        node.data('label', base);
       } else if (node.hasClass('pinned')) {
         node.removeClass('pinned');
         node.addClass('muted');
+        node.data('label', base);
       } else {
         node.addClass('pinned');
+        node.data('label', base + ' 📌');
       }
       updateEdges();
     });
