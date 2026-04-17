@@ -134,12 +134,8 @@
 
 <header>
   <h1>rule-vis</h1>
-  <select id="ruleset-select">
-    <option value="rulesets/tic-tac-toe.json">Tic-Tac-Toe</option>
-    <option value="rulesets/werewolf.json">Werewolf</option>
-    <option value="rulesets/munchkin.json">Munchkin (Simplified)</option>
-    <option value="rulesets/werewolf-diverse-utility.json">Werewolf (Diverse Utility)</option>
-  </select>
+  <select id="game-select"></select>
+  <select id="variant-select" hidden></select>
   <span id="ruleset-name"></span>
 </header>
 
@@ -564,8 +560,56 @@
     render(data);
   }
 
-  document.getElementById('ruleset-select')
-    .addEventListener('change', e => load(e.target.value));
+  const RULESETS = [
+    {
+      game: 'Tic-Tac-Toe',
+      variants: [
+        { label: 'Standard', path: 'rulesets/tic-tac-toe.json' }
+      ]
+    },
+    {
+      game: 'Werewolf',
+      variants: [
+        { label: 'Standard',        path: 'rulesets/werewolf.json' },
+        { label: 'Diverse Utility', path: 'rulesets/werewolf-diverse-utility.json' }
+      ]
+    },
+    {
+      game: 'Munchkin (Simplified)',
+      variants: [
+        { label: 'Standard', path: 'rulesets/munchkin.json' }
+      ]
+    }
+  ];
+
+  const gameSelect    = document.getElementById('game-select');
+  const variantSelect = document.getElementById('variant-select');
+
+  RULESETS.forEach((entry, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = entry.game;
+    gameSelect.appendChild(opt);
+  });
+
+  function applyGame(gameIdx) {
+    const entry = RULESETS[gameIdx];
+    variantSelect.innerHTML = '';
+    entry.variants.forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = v.label;
+      variantSelect.appendChild(opt);
+    });
+    variantSelect.hidden = entry.variants.length < 2;
+    load(entry.variants[0].path);
+  }
+
+  gameSelect.addEventListener('change', e => applyGame(Number(e.target.value)));
+  variantSelect.addEventListener('change', e => {
+    const entry = RULESETS[Number(gameSelect.value)];
+    load(entry.variants[Number(e.target.value)].path);
+  });
 
   (function () {
     const header = document.getElementById('legend-header');
@@ -578,7 +622,7 @@
     });
   })();
 
-  load('rulesets/tic-tac-toe.json');
+  applyGame(0);
 </script>
 </body>
 </html>
