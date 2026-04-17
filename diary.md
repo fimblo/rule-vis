@@ -158,6 +158,19 @@ None this turn.
 
 ---
 
+## 2026-04-17 — Entry 16
+
+**Summary:**
+Reworked the node interaction model after a UX design conversation. The user wanted three distinct goals: see the whole system, focus on a subset, and move clutter out of the way. This led to a 3-state click cycle per node: **normal** (edges dimmed) → **pinned** (edges persistently bright) → **muted** (node grayed, edges hidden) → back to normal. Hover is additive on top: temporarily brightens connected edges without disturbing the underlying state, and respects hidden edges (skips them). Edge conflict rule: if one endpoint is pinned and the other muted, the edge shows faintly at default opacity (neither hidden nor bright). Edge hover also brightens both endpoint nodes. One UX question (how hover interacts with a pinned subset) was left open by the user — implemented the additive approach as a testable default.
+
+**Sentiments:**
+The UX design conversation was productive. The user's three goals made the design crisp once articulated: explore, focus, dismiss. The 3-state cycle is a direct mapping to those goals. The conflict rule (pinned wins over muted, but only faintly) is a reasonable default — shows the relationship exists without emphasizing it. Curious how the user will respond to the additive hover; it might feel like too much information at once when many things are pinned.
+
+**CLAUDE.md recommendations:**
+Worth updating the project status to mention the 3-state interaction model — it's a core UX concept now.
+
+---
+
 ## 2026-04-17 — Entry 15
 
 **Summary:**
