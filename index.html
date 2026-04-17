@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>rule-vis</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: #111827;
+      color: #f3f4f6;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 16px;
+      background: #1f2937;
+      border-bottom: 1px solid #374151;
+      flex-shrink: 0;
+    }
+
+    header h1 { font-size: 1rem; font-weight: 600; letter-spacing: 0.05em; }
+
+    select {
+      background: #374151;
+      color: #f3f4f6;
+      border: 1px solid #4b5563;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+
+    #ruleset-name {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin-left: auto;
+    }
+
+    #cy {
+      flex: 1;
+      display: block;
+    }
+
+    #tooltip {
+      position: fixed;
+      background: #1f2937;
+      border: 1px solid #4b5563;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      max-width: 280px;
+      pointer-events: none;
+      z-index: 10;
+      line-height: 1.5;
+    }
+    #tooltip[hidden] { display: none; }
+    #tooltip .tt-name  { font-weight: 600; margin-bottom: 4px; }
+    #tooltip .tt-desc  { color: #d1d5db; margin-bottom: 6px; }
+    #tooltip .tt-meta  { color: #9ca3af; font-size: 0.75rem; }
+    #tooltip .tt-util  { display: inline-block; padding: 1px 6px; border-radius: 3px; font-weight: 600; }
+    #tooltip .pos { background: #14532d; color: #86efac; }
+    #tooltip .neg { background: #7f1d1d; color: #fca5a5; }
+    #tooltip .neu { background: #374151; color: #9ca3af; }
+
+    #legend {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: #1f2937cc;
+      border: 1px solid #374151;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 0.75rem;
+      backdrop-filter: blur(4px);
+    }
+    #legend h3 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280; margin-bottom: 8px; }
+    .leg-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+    .leg-line { width: 24px; height: 3px; border-radius: 2px; }
+    .leg-dot  { width: 12px; height: 12px; border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>rule-vis</h1>
+  <select id="ruleset-select">
+    <option value="rulesets/tic-tac-toe.json">Tic-Tac-Toe</option>
+  </select>
+  <span id="ruleset-name"></span>
+</header>
+
+<div id="cy"></div>
+
+<div id="tooltip" hidden>
+  <div class="tt-name" id="tt-name"></div>
+  <div class="tt-desc" id="tt-desc"></div>
+  <div class="tt-meta">
+    type: <span id="tt-type"></span> &nbsp;|&nbsp;
+    utility: <span class="tt-util" id="tt-util"></span>
+  </div>
+</div>
+
+<div id="legend">
+  <h3>Edge utility</h3>
+  <div class="leg-row"><div class="leg-line" style="background:#4ade80"></div> positive</div>
+  <div class="leg-row"><div class="leg-line" style="background:#f87171"></div> negative</div>
+  <div class="leg-row"><div class="leg-line" style="background:#6b7280"></div> neutral</div>
+  <h3 style="margin-top:10px">Entity type</h3>
+  <div class="leg-row"><div class="leg-dot" style="background:#7c3aed"></div> game_authority</div>
+  <div class="leg-row"><div class="leg-dot" style="background:#1d4ed8"></div> player</div>
+  <div class="leg-row"><div class="leg-dot" style="background:#0f766e"></div> game_component</div>
+  <div class="leg-row"><div class="leg-dot" style="background:#92400e"></div> group</div>
+  <div class="leg-row"><div class="leg-dot" style="background:#374151"></div> other</div>
+</div>
+
+<script>
+  const NODE_COLORS = {
+    game_authority: '#7c3aed',
+    player:         '#1d4ed8',
+    game_component: '#0f766e',
+    group:          '#92400e',
+  };
+
+  function nodeColor(type) {
+    return NODE_COLORS[type] || '#374151';
+  }
+
+  function edgeColor(utility) {
+    if (utility > 0) return '#4ade80';
+    if (utility < 0) return '#f87171';
+    return '#6b7280';
+  }
+
+  function utilClass(utility) {
+    if (utility > 0) return 'pos';
+    if (utility < 0) return 'neg';
+    return 'neu';
+  }
+
+  function buildElements(data) {
+    const nodes = data.entities.map(e => ({
+      data: {
+        id:    e.id,
+        label: e.name,
+        type:  e.type,
+        color: nodeColor(e.type),
+      }
+    }));
+
+    const edges = data.rules.map(r => ({
+      data: {
+        id:            r.id,
+        source:        r.source_entity,
+        target:        r.target_entity,
+        rule_name:     r.rule_name,
+        rule_type:     r.rule_type,
+        description:   r.description,
+        targetUtility: r.target_utility,
+        color:         edgeColor(r.target_utility),
+      }
+    }));
+
+    return [...nodes, ...edges];
+  }
+
+  let cy = null;
+  const tooltip  = document.getElementById('tooltip');
+  const ttName   = document.getElementById('tt-name');
+  const ttDesc   = document.getElementById('tt-desc');
+  const ttType   = document.getElementById('tt-type');
+  const ttUtil   = document.getElementById('tt-util');
+
+  function showTooltip(evt, data) {
+    ttName.textContent = data.rule_name;
+    ttDesc.textContent = data.description || '';
+    ttType.textContent = data.rule_type;
+    ttUtil.textContent = data.targetUtility > 0 ? `+${data.targetUtility}` : data.targetUtility;
+    ttUtil.className   = `tt-util ${utilClass(data.targetUtility)}`;
+    positionTooltip(evt.originalEvent);
+    tooltip.hidden = false;
+  }
+
+  function positionTooltip(e) {
+    const pad = 12;
+    const tw  = tooltip.offsetWidth  || 280;
+    const th  = tooltip.offsetHeight || 80;
+    let x = e.clientX + pad;
+    let y = e.clientY + pad;
+    if (x + tw > window.innerWidth)  x = e.clientX - tw - pad;
+    if (y + th > window.innerHeight) y = e.clientY - th - pad;
+    tooltip.style.left = `${x}px`;
+    tooltip.style.top  = `${y}px`;
+  }
+
+  function render(data) {
+    document.getElementById('ruleset-name').textContent = data.ruleset?.name ?? '';
+
+    if (cy) { cy.destroy(); cy = null; }
+
+    cy = cytoscape({
+      container: document.getElementById('cy'),
+      elements:  buildElements(data),
+
+      style: [
+        {
+          selector: 'node',
+          style: {
+            'background-color':  'data(color)',
+            'label':             'data(label)',
+            'color':             '#f9fafb',
+            'font-size':         '11px',
+            'text-valign':       'center',
+            'text-halign':       'center',
+            'text-wrap':         'wrap',
+            'text-max-width':    '90px',
+            'shape':             'round-rectangle',
+            'width':             100,
+            'height':            40,
+            'border-width':      2,
+            'border-color':      '#6b7280',
+          }
+        },
+        {
+          selector: 'node:selected',
+          style: { 'border-color': '#f9fafb', 'border-width': 3 }
+        },
+        {
+          selector: 'edge',
+          style: {
+            'line-color':           'data(color)',
+            'target-arrow-color':   'data(color)',
+            'target-arrow-shape':   'triangle',
+            'curve-style':          'bezier',
+            'width':                2,
+            'opacity':              0.75,
+          }
+        },
+        {
+          selector: 'edge:selected',
+          style: { 'width': 4, 'opacity': 1 }
+        },
+      ],
+
+      layout: {
+        name:             'cose',
+        padding:          60,
+        nodeRepulsion:    8000,
+        idealEdgeLength:  120,
+        animate:          false,
+      }
+    });
+
+    cy.on('mouseover', 'edge', evt => showTooltip(evt, evt.target.data()));
+    cy.on('mousemove', 'edge', evt => positionTooltip(evt.originalEvent));
+    cy.on('mouseout',  'edge', ()  => { tooltip.hidden = true; });
+    cy.on('tap',       'edge', evt => showTooltip(evt, evt.target.data()));
+    cy.on('tap',       'core', ()  => { tooltip.hidden = true; });
+  }
+
+  async function load(path) {
+    const res  = await fetch(path);
+    const data = await res.json();
+    render(data);
+  }
+
+  document.getElementById('ruleset-select')
+    .addEventListener('change', e => load(e.target.value));
+
+  load('rulesets/tic-tac-toe.json');
+</script>
+</body>
+</html>
