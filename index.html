@@ -110,10 +110,14 @@
 </div>
 
 <div id="legend">
-  <h3>Edge utility</h3>
-  <div class="leg-row"><div class="leg-line" style="background:#4ade80"></div> positive</div>
-  <div class="leg-row"><div class="leg-line" style="background:#f87171"></div> negative</div>
-  <div class="leg-row"><div class="leg-line" style="background:#6b7280"></div> neutral</div>
+  <h3>Governs edge (solid)</h3>
+  <div class="leg-row"><div class="leg-line" style="background:#4ade80"></div> positive utility</div>
+  <div class="leg-row"><div class="leg-line" style="background:#f87171"></div> negative utility</div>
+  <div class="leg-row"><div class="leg-line" style="background:#6b7280"></div> neutral utility</div>
+  <h3 style="margin-top:10px">Acts-on edge (dashed)</h3>
+  <div class="leg-row"><div class="leg-line" style="background:#4ade80;opacity:0.5"></div> positive utility</div>
+  <div class="leg-row"><div class="leg-line" style="background:#f87171;opacity:0.5"></div> negative utility</div>
+  <div class="leg-row"><div class="leg-line" style="background:#6b7280;opacity:0.5"></div> neutral utility</div>
   <h3 style="margin-top:10px">Entity type</h3>
   <div class="leg-row"><div class="leg-dot" style="background:#7c3aed"></div> game_authority</div>
   <div class="leg-row"><div class="leg-dot" style="background:#1d4ed8"></div> player</div>
@@ -156,7 +160,7 @@
       }
     }));
 
-    const edges = data.rules.map(r => ({
+    const governEdges = data.rules.map(r => ({
       data: {
         id:            r.id,
         source:        r.source_entity,
@@ -166,10 +170,27 @@
         description:   r.description,
         targetUtility: r.target_utility,
         color:         edgeColor(r.target_utility),
+        edgeKind:      'governs',
       }
     }));
 
-    return [...nodes, ...edges];
+    const actsOnEdges = data.rules
+      .filter(r => r.object_entity != null)
+      .map(r => ({
+        data: {
+          id:            `${r.id}-obj`,
+          source:        r.target_entity,
+          target:        r.object_entity,
+          rule_name:     r.rule_name,
+          rule_type:     r.rule_type,
+          description:   r.description,
+          targetUtility: r.object_utility,
+          color:         edgeColor(r.object_utility),
+          edgeKind:      'acts-on',
+        }
+      }));
+
+    return [...nodes, ...governEdges, ...actsOnEdges];
   }
 
   let cy = null;
@@ -242,6 +263,15 @@
             'curve-style':          'bezier',
             'width':                2,
             'opacity':              0.75,
+          }
+        },
+        {
+          selector: 'edge[edgeKind = "acts-on"]',
+          style: {
+            'line-style':  'dashed',
+            'line-dash-pattern': [6, 4],
+            'width':       1.5,
+            'opacity':     0.5,
           }
         },
         {
