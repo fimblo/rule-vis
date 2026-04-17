@@ -38,6 +38,8 @@ A rule is a 6-tuple:
 
 **Utility:** relative weights (e.g., 1, -1) — not absolute units. One rule per source→target pair; a rule targeting 5 entities becomes 5 tuples.
 
+`object_entity` and `object_utility` are optional fields that separate *the governed entity* (who must comply) from *the object of the action* (what the rule is about). These are the same entity for agent-to-agent rules, but differ when a passive resource is involved — a shared spreadsheet, a deployment pipeline, a game board. `object_utility` captures the cost or load imposed on that resource.
+
 ## Local Development
 
 No build step. Run a local server to avoid browser CORS restrictions when fetching JSON:
