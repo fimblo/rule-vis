@@ -40,3 +40,16 @@ The user responded warmly to the viz-spike-first recommendation. Good sign — t
 Consider adding a note that the JSON schema for the rule tuple is the primary interface contract between the translator and visualizer components — worth documenting once it stabilizes.
 
 ---
+
+## 2026-04-17 — Entry 4
+
+**Summary:**
+User asked to establish a development diary. Created `diary.md` with backfilled entries for the three prior interactions. Initialized a git repository and committed all artifacts (design doc, CLAUDE.md, diary). Set up a `Stop` hook in `.claude/settings.local.json` that displays a reminder to write a diary entry after every conversation turn.
+
+**Sentiments:**
+The diary idea is a nice touch — it turns the AI collaboration itself into a documented process, not just the outputs. The hook mechanism is a clean way to enforce the habit. All scaffolding is in place before any real code is written: git, CLAUDE.md, diary, and hooks. That's healthy discipline.
+
+**CLAUDE.md recommendations:**
+None this turn.
+
+---
