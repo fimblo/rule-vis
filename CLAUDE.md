@@ -38,6 +38,14 @@ A rule is a 6-tuple:
 
 **Utility:** relative weights (e.g., 1, -1) — not absolute units. One rule per source→target pair; a rule targeting 5 entities becomes 5 tuples.
 
+## Development Conventions
+
+**TDD (red-green):** Write a failing test first, commit it (title must note it fails, e.g. `test: add failing test for X`), then make it pass in a follow-up commit.
+
+**Commit style:** Semantic commits, subject line under 80 characters. Commits should be small and tell a story — no large all-in-one commits.
+
+Common prefixes: `feat:`, `fix:`, `test:`, `docs:`, `refactor:`, `chore:`
+
 ## Design Decisions Already Made
 
 - Utility stays as relative weights, not time/money units — avoids over-engineering
