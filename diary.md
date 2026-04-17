@@ -158,6 +158,19 @@ None this turn.
 
 ---
 
+## 2026-04-17 — Entry 14
+
+**Summary:**
+Four feature requests landed as separate commits. (1) **Layout fix**: increased cose layout parameters dramatically (nodeRepulsion 8000→400000, idealEdgeLength 120→200, added nodeOverlap, numIter, cooling schedule, nodeDimensionsIncludeLabels) to prevent nodes overlapping on initial load. (2) **Net utility on nodes**: computed net utility per entity (sum of target_utility across governs rules + object_utility across acts-on rules), displayed as a second label line `(+N)`, colored the node border green/red/gray accordingly, and added a node hover tooltip showing the breakdown (net, as-governed, as-object). (3) **GitHub Actions back-link**: added a step summary line to `deploy.yml` that outputs a clickable link to the Pages URL after each deploy. (4) **Collaboration onboarding**: updated CLAUDE.md project status (now accurately describes 3 rulesets + all current features), added the diary convention section so future Claude instances know to write entries, updated README with a "Working with Claude Code" section covering the diary, commit conventions, and local dev.
+
+**Sentiments:**
+The net utility feature is the most substantively interesting of the four — it makes the "injustice" or "choke-point" pattern immediately legible without hovering individual edges. The Moderator in all three rulesets will show a net of 0 (it governs others but receives nothing), while players under heavy constraint will show large negatives. The layout fix was overdue; the old parameters were clearly tuned for tiny graphs and broke down with Munchkin's 8-node, 48-rule density. Happy with the onboarding docs too — the repo now has enough scaffolding that a stranger (human or AI) could pick it up without a handover call.
+
+**CLAUDE.md recommendations:**
+Already applied this turn — project status and diary convention are now current.
+
+---
+
 ## 2026-04-17 — Entry 12
 
 **Summary:**
