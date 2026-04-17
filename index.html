@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>rule-vis</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -43,7 +44,32 @@
       font-size: 0.8rem;
       color: #9ca3af;
       margin-left: auto;
+      cursor: help;
+      text-decoration: underline dotted #6b7280;
     }
+
+    #ruleset-desc {
+      position: fixed;
+      top: 50px;
+      right: 16px;
+      background: #1f2937;
+      border: 1px solid #4b5563;
+      border-radius: 6px;
+      padding: 14px 18px;
+      font-size: 0.8rem;
+      max-width: 360px;
+      z-index: 20;
+      line-height: 1.6;
+      color: #d1d5db;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    }
+    #ruleset-desc[hidden] { display: none; }
+    #ruleset-desc h2 { font-size: 0.95rem; font-weight: 700; color: #f3f4f6; margin-bottom: 8px; }
+    #ruleset-desc p  { margin-bottom: 8px; }
+    #ruleset-desc ul { padding-left: 16px; margin-bottom: 8px; }
+    #ruleset-desc li { margin-bottom: 3px; }
+    #ruleset-desc strong { color: #f3f4f6; font-weight: 600; }
+    #ruleset-desc em { color: #a5b4fc; font-style: italic; }
 
     #cy {
       flex: 1;
@@ -115,6 +141,8 @@
   </select>
   <span id="ruleset-name"></span>
 </header>
+
+<div id="ruleset-desc" hidden></div>
 
 <div id="cy"></div>
 
@@ -310,8 +338,16 @@
     tooltip.style.top  = `${y}px`;
   }
 
+  const rulesetNameEl = document.getElementById('ruleset-name');
+  const rulesetDescEl = document.getElementById('ruleset-desc');
+
+  rulesetNameEl.addEventListener('mouseenter', () => { rulesetDescEl.hidden = false; });
+  rulesetNameEl.addEventListener('mouseleave', () => { rulesetDescEl.hidden = true; });
+
   function render(data) {
-    document.getElementById('ruleset-name').textContent = data.ruleset?.name ?? '';
+    rulesetNameEl.textContent = data.ruleset?.name ?? '';
+    const desc = data.ruleset?.description ?? '';
+    rulesetDescEl.innerHTML = desc ? marked.parse(desc) : '';
 
     if (cy) { cy.destroy(); cy = null; }
 
