@@ -480,11 +480,6 @@
     });
 
     layout.on('layoutstop', () => {
-      const w = cy.width();
-      const h = cy.height();
-      const padX = 120;
-      const padY = 80;
-
       // Group nodes by net utility level
       const groups = new Map();
       cy.nodes().forEach(node => {
@@ -493,23 +488,29 @@
         groups.get(net).push(node);
       });
 
-      // Sort levels descending: high utility = top of canvas
+      // Sort levels descending: high utility = top
       const levels = [...groups.keys()].sort((a, b) => b - a);
       const numLevels = levels.length;
+      if (numLevels === 0) return;
+
+      // Use cose bounding box (model coordinates) for positioning
+      const bb  = cy.nodes().boundingBox();
+      const bbW = Math.max(bb.w, 400);
+      const bbH = Math.max(bb.h, 200);
 
       levels.forEach((level, levelIdx) => {
         const nodes = groups.get(level);
-        // Preserve cose horizontal ordering within each level
+        // Preserve cose-derived horizontal ordering within each level
         nodes.sort((a, b) => a.position('x') - b.position('x'));
 
         const y = numLevels === 1
-          ? h / 2
-          : padY + (levelIdx / (numLevels - 1)) * (h - 2 * padY);
+          ? bb.y1 + bbH / 2
+          : bb.y1 + (levelIdx / (numLevels - 1)) * bbH;
 
         nodes.forEach((node, nodeIdx) => {
           const x = nodes.length === 1
-            ? w / 2
-            : padX + (nodeIdx / (nodes.length - 1)) * (w - 2 * padX);
+            ? bb.x1 + bbW / 2
+            : bb.x1 + (nodeIdx / (nodes.length - 1)) * bbW;
           node.position({ x, y });
         });
       });
