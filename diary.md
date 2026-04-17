@@ -118,3 +118,16 @@ This was the best conversation so far. The user immediately saw the real-world p
 None this turn — all updates applied.
 
 ---
+
+## 2026-04-17 — Entry 10
+
+**Summary:**
+User noticed the edge tooltip showed a single "utility" value with no label indicating whose utility it was. Updated the tooltip to show a labelled row per party (source, target, and object when present), each with a color-coded badge (+1 green, -1 red, 0 gray). Entity names are now looked up from the ruleset and stored in edge data at build time, so the tooltip always shows human-readable names rather than IDs.
+
+**Sentiments:**
+Small change, big clarity improvement. The ambiguity was a real UX problem — without knowing whose utility is shown, the visualization doesn't communicate much. The tooltip now tells a complete story per rule. Steady progress.
+
+**CLAUDE.md recommendations:**
+None this turn.
+
+---
