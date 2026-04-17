@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.3.0",
+  "schema_version": "0.4.0",
   "ruleset": {
     "name": "Tic-Tac-Toe",
     "description": "## Tic-Tac-Toe\n\nClassic two-player strategy game played on a 3×3 grid.\n\n**Goal:** place three of your marks in a row — horizontally, vertically, or diagonally.\n\n**Mechanics:**\n- **X** moves first\n- Players alternate turns\n- A player may only mark an empty cell\n- Game ends immediately on three in a row, or in a **draw** if the board fills with no winner",

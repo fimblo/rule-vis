@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.3.0",
+  "schema_version": "0.4.0",
   "ruleset": {
     "name": "Munchkin (Simplified)",
     "description": "## Munchkin (Simplified)\n\nCompetitive dungeon-delving card game for 3–6 players (modelled with 4).\n\n**Goal:** be the first to reach **Level 10** by killing monsters.\n\n**Turn structure:**\n1. *Kick open the door* — draw a Door card\n2. *Fight the monster* (or look for trouble / loot the room)\n3. *Gain a level + treasure* on victory\n4. *Charity* — discard down to 5 hand cards at turn end\n\n**Key mechanics:**\n- Other players may **help** the active player fight (split the treasure)\n- Other players may **hinder** the fight with Bad Stuff cards\n- Equipment cards raise your combat strength\n- Card types are modelled as generic entities; individual card text is in rule descriptions",

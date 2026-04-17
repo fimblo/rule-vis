@@ -24,7 +24,7 @@ A general-purpose tool for translating human-readable rule sets into a structure
 
 ## Core Data Model
 
-Schema version: **0.3.0**
+Schema version: **0.4.0**
 
 A rule is a tuple:
 ```
@@ -48,7 +48,7 @@ A rule is a tuple:
 - `obligation` — subject must follow procedure Z
 - `complex` — combinations (not yet used)
 
-One rule per authority→subject pair; a rule applying to 5 subjects becomes 5 tuples.
+**Cohorts (v0.4.0):** An optional top-level `cohorts` object maps names to arrays of entity IDs. Any entity field in a rule may reference a cohort with `@cohort_name`. The visualizer expands each cohort reference into one rule per member at load time, generating IDs like `r01_werewolf`. Only one cohort reference per rule is supported (first of subject, affected, authority wins). Use cohorts to avoid repeating identical rules across multiple entities.
 
 `faction` is an optional entity field (string or null) grouping entities into teams — e.g. `"village"` vs `"werewolf"`. Not yet visualized but present in data.
 

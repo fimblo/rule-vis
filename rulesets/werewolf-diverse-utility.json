@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.3.0",
+  "schema_version": "0.4.0",
   "ruleset": {
     "name": "Werewolf (Diverse Utility)",
     "description": "## Werewolf — Diverse Utility Variant\n\nSame rules as the standard Werewolf ruleset, but utility values are **calibrated by strategic impact** rather than a flat ±1.\n\n**Key differences from the base ruleset:**\n- Eliminating or exposing the *Seer* is worth ±3 — it is the most powerful single action in the game\n- Eliminating the *Doctor* is worth ±2 — removes all future protection\n- The vote eliminating the *Werewolf* costs −3 — it ends the wolf's game entirely\n- The Seer's *role-secrecy prohibition* costs −2 — Seer has the strongest motivation to reveal\n- The Doctor accidentally *protecting the Werewolf* scores +2 for the wolf — a big tactical swing\n- The Werewolf's vote is worth +2 — full information makes it more powerful than a villager's vote\n- The Werewolf's win condition (parity, not majority) scores +2 — a very favorable threshold\n\n**Goal:** identify which entities are most advantaged or disadvantaged by the rules — the graph should show the Seer and Werewolf as the highest-stakes nodes.",
@@ -14,6 +14,12 @@
     { "id": "villager_b",  "name": "Villager B",   "type": "player",          "faction": "village" },
     { "id": "vote_tally",  "name": "Village Vote", "type": "game_component",  "faction": null }
   ],
+  "cohorts": {
+    "plain_villagers":          ["villager_a", "villager_b"],
+    "village_players":          ["seer", "doctor", "villager_a", "villager_b"],
+    "seer_inspect_innocents":   ["doctor", "villager_a", "villager_b"],
+    "doctor_protect_innocents": ["seer", "villager_a", "villager_b"]
+  },
   "rules": [
     {
       "id": "r01",
@@ -47,26 +53,16 @@
     },
     {
       "id": "r04",
-      "rule_name": "villager_a_role_is_secret",
+      "rule_name": "villager_role_is_secret",
       "rule_type": "prohibition",
       "authority_entity": "moderator",
-      "subject_entity": "villager_a",
+      "subject_entity": "@plain_villagers",
       "authority_utility": 0,
       "subject_utility": -1,
-      "description": "Villager A may not reveal their role to other players. Low cost: a villager identity carries little useful information."
+      "description": "Villagers may not reveal their roles. Low cost: a villager identity carries little useful information."
     },
     {
       "id": "r05",
-      "rule_name": "villager_b_role_is_secret",
-      "rule_type": "prohibition",
-      "authority_entity": "moderator",
-      "subject_entity": "villager_b",
-      "authority_utility": 0,
-      "subject_utility": -1,
-      "description": "Villager B may not reveal their role to other players. Low cost: a villager identity carries little useful information."
-    },
-    {
-      "id": "r06",
       "rule_name": "werewolf_may_eliminate_seer",
       "rule_type": "permission",
       "authority_entity": "moderator",
@@ -78,7 +74,7 @@
       "description": "Each night the Werewolf may choose to eliminate the Seer. Highest-value kill (+3/−3): removes the village's only intelligence asset permanently."
     },
     {
-      "id": "r07",
+      "id": "r06",
       "rule_name": "werewolf_may_eliminate_doctor",
       "rule_type": "permission",
       "authority_entity": "moderator",
@@ -90,31 +86,19 @@
       "description": "Each night the Werewolf may choose to eliminate the Doctor. High-value kill (+2/−2): removes all future night-time protection for the village."
     },
     {
+      "id": "r07",
+      "rule_name": "werewolf_may_eliminate_villager",
+      "rule_type": "permission",
+      "authority_entity": "moderator",
+      "subject_entity": "werewolf",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "@plain_villagers",
+      "affected_utility": -1,
+      "description": "Each night the Werewolf may choose to eliminate a plain Villager. Standard kill: removes one vote, nudging the wolf toward parity."
+    },
+    {
       "id": "r08",
-      "rule_name": "werewolf_may_eliminate_villager_a",
-      "rule_type": "permission",
-      "authority_entity": "moderator",
-      "subject_entity": "werewolf",
-      "authority_utility": 0,
-      "subject_utility": 1,
-      "affected_entity": "villager_a",
-      "affected_utility": -1,
-      "description": "Each night the Werewolf may choose to eliminate Villager A. Standard kill: removes one vote, nudging the wolf toward parity."
-    },
-    {
-      "id": "r09",
-      "rule_name": "werewolf_may_eliminate_villager_b",
-      "rule_type": "permission",
-      "authority_entity": "moderator",
-      "subject_entity": "werewolf",
-      "authority_utility": 0,
-      "subject_utility": 1,
-      "affected_entity": "villager_b",
-      "affected_utility": -1,
-      "description": "Each night the Werewolf may choose to eliminate Villager B. Standard kill: removes one vote, nudging the wolf toward parity."
-    },
-    {
-      "id": "r10",
       "rule_name": "seer_may_inspect_werewolf",
       "rule_type": "permission",
       "authority_entity": "moderator",
@@ -126,43 +110,19 @@
       "description": "Each night the Seer may learn one player's role — inspecting the Werewolf directly identifies the threat. Highest-value action (+3/−3): the village can now coordinate a winning vote."
     },
     {
-      "id": "r11",
-      "rule_name": "seer_may_inspect_doctor",
+      "id": "r09",
+      "rule_name": "seer_may_inspect_innocent",
       "rule_type": "permission",
       "authority_entity": "moderator",
       "subject_entity": "seer",
       "authority_utility": 0,
       "subject_utility": 1,
-      "affected_entity": "doctor",
+      "affected_entity": "@seer_inspect_innocents",
       "affected_utility": 0,
       "description": "Each night the Seer may learn one player's role — inspecting an innocent confirms them safe. Useful but not decisive."
     },
     {
-      "id": "r12",
-      "rule_name": "seer_may_inspect_villager_a",
-      "rule_type": "permission",
-      "authority_entity": "moderator",
-      "subject_entity": "seer",
-      "authority_utility": 0,
-      "subject_utility": 1,
-      "affected_entity": "villager_a",
-      "affected_utility": 0,
-      "description": "Each night the Seer may learn one player's role — inspecting an innocent confirms them safe."
-    },
-    {
-      "id": "r13",
-      "rule_name": "seer_may_inspect_villager_b",
-      "rule_type": "permission",
-      "authority_entity": "moderator",
-      "subject_entity": "seer",
-      "authority_utility": 0,
-      "subject_utility": 1,
-      "affected_entity": "villager_b",
-      "affected_utility": 0,
-      "description": "Each night the Seer may learn one player's role — inspecting an innocent confirms them safe."
-    },
-    {
-      "id": "r14",
+      "id": "r10",
       "rule_name": "doctor_may_protect_werewolf",
       "rule_type": "permission",
       "authority_entity": "moderator",
@@ -171,47 +131,23 @@
       "subject_utility": 1,
       "affected_entity": "werewolf",
       "affected_utility": 2,
-      "description": "Each night the Doctor may protect any player — without knowing roles, the Doctor may unknowingly protect the Werewolf. High-value swing for the wolf (+2): they survive the night AND the Doctor's turn is wasted on the wrong target."
+      "description": "Each night the Doctor may protect any player — without knowing roles, they may unknowingly protect the Werewolf. High-value swing for the wolf (+2): they survive the night AND the Doctor's turn is wasted on the wrong target."
     },
     {
-      "id": "r15",
-      "rule_name": "doctor_may_protect_seer",
+      "id": "r11",
+      "rule_name": "doctor_may_protect_innocent",
       "rule_type": "permission",
       "authority_entity": "moderator",
       "subject_entity": "doctor",
       "authority_utility": 0,
       "subject_utility": 1,
-      "affected_entity": "seer",
+      "affected_entity": "@doctor_protect_innocents",
       "affected_utility": 1,
-      "description": "Each night the Doctor may protect any player from the Werewolf's elimination. Protecting the Seer is the highest-value protection choice."
+      "description": "Each night the Doctor may protect any village player from the Werewolf's elimination."
     },
     {
-      "id": "r16",
-      "rule_name": "doctor_may_protect_villager_a",
-      "rule_type": "permission",
-      "authority_entity": "moderator",
-      "subject_entity": "doctor",
-      "authority_utility": 0,
-      "subject_utility": 1,
-      "affected_entity": "villager_a",
-      "affected_utility": 1,
-      "description": "Each night the Doctor may protect any player from the Werewolf's elimination."
-    },
-    {
-      "id": "r17",
-      "rule_name": "doctor_may_protect_villager_b",
-      "rule_type": "permission",
-      "authority_entity": "moderator",
-      "subject_entity": "doctor",
-      "authority_utility": 0,
-      "subject_utility": 1,
-      "affected_entity": "villager_b",
-      "affected_utility": 1,
-      "description": "Each night the Doctor may protect any player from the Werewolf's elimination."
-    },
-    {
-      "id": "r18",
-      "rule_name": "werewolf_may_cast_vote",
+      "id": "r12",
+      "rule_name": "werewolf_must_cast_vote",
       "rule_type": "obligation",
       "authority_entity": "moderator",
       "subject_entity": "werewolf",
@@ -222,11 +158,11 @@
       "description": "During the day each player must cast exactly one vote. The Werewolf's vote is worth more (+2) — they have full information and can steer village suspicion toward innocents."
     },
     {
-      "id": "r19",
-      "rule_name": "seer_may_cast_vote",
+      "id": "r13",
+      "rule_name": "village_must_cast_vote",
       "rule_type": "obligation",
       "authority_entity": "moderator",
-      "subject_entity": "seer",
+      "subject_entity": "@village_players",
       "authority_utility": 0,
       "subject_utility": 1,
       "affected_entity": "vote_tally",
@@ -234,43 +170,7 @@
       "description": "During the day each player must cast exactly one vote nominating another player for elimination."
     },
     {
-      "id": "r20",
-      "rule_name": "doctor_may_cast_vote",
-      "rule_type": "obligation",
-      "authority_entity": "moderator",
-      "subject_entity": "doctor",
-      "authority_utility": 0,
-      "subject_utility": 1,
-      "affected_entity": "vote_tally",
-      "affected_utility": -1,
-      "description": "During the day each player must cast exactly one vote nominating another player for elimination."
-    },
-    {
-      "id": "r21",
-      "rule_name": "villager_a_may_cast_vote",
-      "rule_type": "obligation",
-      "authority_entity": "moderator",
-      "subject_entity": "villager_a",
-      "authority_utility": 0,
-      "subject_utility": 1,
-      "affected_entity": "vote_tally",
-      "affected_utility": -1,
-      "description": "During the day each player must cast exactly one vote nominating another player for elimination."
-    },
-    {
-      "id": "r22",
-      "rule_name": "villager_b_may_cast_vote",
-      "rule_type": "obligation",
-      "authority_entity": "moderator",
-      "subject_entity": "villager_b",
-      "authority_utility": 0,
-      "subject_utility": 1,
-      "affected_entity": "vote_tally",
-      "affected_utility": -1,
-      "description": "During the day each player must cast exactly one vote nominating another player for elimination."
-    },
-    {
-      "id": "r23",
+      "id": "r14",
       "rule_name": "vote_may_eliminate_werewolf",
       "rule_type": "obligation",
       "authority_entity": "moderator",
@@ -282,7 +182,7 @@
       "description": "The player who receives the most votes at end of day must leave the game. For the Werewolf this is game-ending (−3) — no recovery is possible."
     },
     {
-      "id": "r24",
+      "id": "r15",
       "rule_name": "vote_may_eliminate_seer",
       "rule_type": "obligation",
       "authority_entity": "moderator",
@@ -291,10 +191,10 @@
       "subject_utility": -2,
       "affected_entity": "vote_tally",
       "affected_utility": 0,
-      "description": "The player who receives the most votes at end of day must leave the game. Losing the Seer to a vote (−2) is especially costly — it removes the village's primary investigative tool."
+      "description": "Losing the Seer to a vote (−2) is especially costly — it removes the village's primary investigative tool."
     },
     {
-      "id": "r25",
+      "id": "r16",
       "rule_name": "vote_may_eliminate_doctor",
       "rule_type": "obligation",
       "authority_entity": "moderator",
@@ -303,14 +203,14 @@
       "subject_utility": -2,
       "affected_entity": "vote_tally",
       "affected_utility": 0,
-      "description": "The player who receives the most votes at end of day must leave the game. Losing the Doctor to a vote (−2) removes all future night protection."
+      "description": "Losing the Doctor to a vote (−2) removes all future night protection."
     },
     {
-      "id": "r26",
-      "rule_name": "vote_may_eliminate_villager_a",
+      "id": "r17",
+      "rule_name": "vote_may_eliminate_villager",
       "rule_type": "obligation",
       "authority_entity": "moderator",
-      "subject_entity": "villager_a",
+      "subject_entity": "@plain_villagers",
       "authority_utility": 0,
       "subject_utility": -1,
       "affected_entity": "vote_tally",
@@ -318,59 +218,17 @@
       "description": "The player who receives the most votes at end of day must leave the game."
     },
     {
-      "id": "r27",
-      "rule_name": "vote_may_eliminate_villager_b",
-      "rule_type": "obligation",
-      "authority_entity": "moderator",
-      "subject_entity": "villager_b",
-      "authority_utility": 0,
-      "subject_utility": -1,
-      "affected_entity": "vote_tally",
-      "affected_utility": 0,
-      "description": "The player who receives the most votes at end of day must leave the game."
-    },
-    {
-      "id": "r28",
+      "id": "r18",
       "rule_name": "village_wins_if_werewolf_eliminated",
       "rule_type": "permission",
       "authority_entity": "moderator",
-      "subject_entity": "seer",
+      "subject_entity": "@village_players",
       "authority_utility": 0,
       "subject_utility": 1,
       "description": "The village wins when all Werewolves have been eliminated."
     },
     {
-      "id": "r29",
-      "rule_name": "village_wins_if_werewolf_eliminated",
-      "rule_type": "permission",
-      "authority_entity": "moderator",
-      "subject_entity": "doctor",
-      "authority_utility": 0,
-      "subject_utility": 1,
-      "description": "The village wins when all Werewolves have been eliminated."
-    },
-    {
-      "id": "r30",
-      "rule_name": "village_wins_if_werewolf_eliminated",
-      "rule_type": "permission",
-      "authority_entity": "moderator",
-      "subject_entity": "villager_a",
-      "authority_utility": 0,
-      "subject_utility": 1,
-      "description": "The village wins when all Werewolves have been eliminated."
-    },
-    {
-      "id": "r31",
-      "rule_name": "village_wins_if_werewolf_eliminated",
-      "rule_type": "permission",
-      "authority_entity": "moderator",
-      "subject_entity": "villager_b",
-      "authority_utility": 0,
-      "subject_utility": 1,
-      "description": "The village wins when all Werewolves have been eliminated."
-    },
-    {
-      "id": "r32",
+      "id": "r19",
       "rule_name": "werewolf_wins_when_equal_villagers",
       "rule_type": "permission",
       "authority_entity": "moderator",
