@@ -260,3 +260,15 @@ The naming conversation was worth having. `authority/subject/affected` is meanin
 **CLAUDE.md recommendations:**
 Already updated this turn.
 
+
+## 2026-04-17 — Entry 21
+
+**Summary:**
+Fixed two layout problems visible in Munchkin. (1) Nodes at the same utility level (e.g. all 4 players at +7) were overlapping because they all received the same Y coordinate after the cose layout. (2) Vertical space was proportional to utility *value* differences (+7 to 0 to −4 = 11 units), creating huge empty gaps between levels. Fix: replaced the linear value-mapping approach with a level-based approach — nodes are grouped by net utility, groups are sorted descending (high = top), and Y is distributed evenly across the distinct *levels* (not values). Within each level, nodes are spread evenly across X, sorted by their cose-derived X position to preserve relative horizontal ordering from the force layout.
+
+**Sentiments:**
+The two-problem diagnosis was clean: overlap is a within-level problem, excess height is a between-level problem. The level-based approach solves both at once and is more robust — it doesn't matter whether utility values are dense or sparse, the canvas is always used efficiently. The cose X sort within levels is a nice touch; it means the force layout still contributes something meaningful to the final positions.
+
+**CLAUDE.md recommendations:**
+None this turn.
+
