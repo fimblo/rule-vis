@@ -1,0 +1,156 @@
+{
+  "schema_version": "0.1.0",
+  "ruleset": {
+    "name": "Tic-Tac-Toe",
+    "description": "Two players take turns marking spaces in a 3×3 grid. The player who places three marks in a row, column, or diagonal wins.",
+    "source": "Traditional / public domain"
+  },
+  "entities": [
+    { "id": "rulebook", "name": "Rulebook",  "type": "game_authority" },
+    { "id": "player_x", "name": "Player X",  "type": "player" },
+    { "id": "player_o", "name": "Player O",  "type": "player" },
+    { "id": "board",    "name": "Board",      "type": "game_component" }
+  ],
+  "rules": [
+    {
+      "id": "r01",
+      "rule_name": "x_moves_first",
+      "rule_type": "positive",
+      "source_entity": "rulebook",
+      "target_entity": "player_x",
+      "source_utility": 0,
+      "target_utility": 1,
+      "description": "Player X has the option to make the opening move"
+    },
+    {
+      "id": "r02",
+      "rule_name": "o_waits_for_opening_move",
+      "rule_type": "negative",
+      "source_entity": "rulebook",
+      "target_entity": "player_o",
+      "source_utility": 0,
+      "target_utility": -1,
+      "description": "Player O may not move before Player X has completed the first move"
+    },
+    {
+      "id": "r03",
+      "rule_name": "x_waits_for_o_turn",
+      "rule_type": "atomic_procedural",
+      "source_entity": "rulebook",
+      "target_entity": "player_x",
+      "source_utility": 0,
+      "target_utility": -1,
+      "description": "To move again, Player X must first wait for Player O to take a turn"
+    },
+    {
+      "id": "r04",
+      "rule_name": "o_waits_for_x_turn",
+      "rule_type": "atomic_procedural",
+      "source_entity": "rulebook",
+      "target_entity": "player_o",
+      "source_utility": 0,
+      "target_utility": -1,
+      "description": "To move again, Player O must first wait for Player X to take a turn"
+    },
+    {
+      "id": "r05",
+      "rule_name": "x_may_claim_empty_cell",
+      "rule_type": "positive",
+      "source_entity": "rulebook",
+      "target_entity": "player_x",
+      "source_utility": 0,
+      "target_utility": 1,
+      "description": "Player X has the option to mark any unoccupied cell on the board"
+    },
+    {
+      "id": "r06",
+      "rule_name": "o_may_claim_empty_cell",
+      "rule_type": "positive",
+      "source_entity": "rulebook",
+      "target_entity": "player_o",
+      "source_utility": 0,
+      "target_utility": 1,
+      "description": "Player O has the option to mark any unoccupied cell on the board"
+    },
+    {
+      "id": "r07",
+      "rule_name": "x_may_not_claim_occupied_cell",
+      "rule_type": "negative",
+      "source_entity": "rulebook",
+      "target_entity": "player_x",
+      "source_utility": 0,
+      "target_utility": -1,
+      "description": "Player X may not mark a cell that is already occupied"
+    },
+    {
+      "id": "r08",
+      "rule_name": "o_may_not_claim_occupied_cell",
+      "rule_type": "negative",
+      "source_entity": "rulebook",
+      "target_entity": "player_o",
+      "source_utility": 0,
+      "target_utility": -1,
+      "description": "Player O may not mark a cell that is already occupied"
+    },
+    {
+      "id": "r09",
+      "rule_name": "x_wins_on_three_in_row",
+      "rule_type": "positive",
+      "source_entity": "rulebook",
+      "target_entity": "player_x",
+      "source_utility": 0,
+      "target_utility": 1,
+      "description": "Player X wins if they complete three consecutive marks in a row, column, or diagonal"
+    },
+    {
+      "id": "r10",
+      "rule_name": "o_wins_on_three_in_row",
+      "rule_type": "positive",
+      "source_entity": "rulebook",
+      "target_entity": "player_o",
+      "source_utility": 0,
+      "target_utility": 1,
+      "description": "Player O wins if they complete three consecutive marks in a row, column, or diagonal"
+    },
+    {
+      "id": "r11",
+      "rule_name": "x_game_ends_on_win",
+      "rule_type": "atomic_procedural",
+      "source_entity": "rulebook",
+      "target_entity": "player_x",
+      "source_utility": 0,
+      "target_utility": 1,
+      "description": "If Player X achieves three in a row, play must stop — the game is over"
+    },
+    {
+      "id": "r12",
+      "rule_name": "o_game_ends_on_win",
+      "rule_type": "atomic_procedural",
+      "source_entity": "rulebook",
+      "target_entity": "player_o",
+      "source_utility": 0,
+      "target_utility": 1,
+      "description": "If Player O achieves three in a row, play must stop — the game is over"
+    },
+    {
+      "id": "r13",
+      "rule_name": "x_draw_on_full_board",
+      "rule_type": "atomic_procedural",
+      "source_entity": "rulebook",
+      "target_entity": "player_x",
+      "source_utility": 0,
+      "target_utility": 0,
+      "description": "If the board is full and no player has three in a row, the game ends in a draw"
+    },
+    {
+      "id": "r14",
+      "rule_name": "o_draw_on_full_board",
+      "rule_type": "atomic_procedural",
+      "source_entity": "rulebook",
+      "target_entity": "player_o",
+      "source_utility": 0,
+      "target_utility": 0,
+      "description": "If the board is full and no player has three in a row, the game ends in a draw"
+    }
+  ]
+}
