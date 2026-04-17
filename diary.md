@@ -297,3 +297,16 @@ Hover-on-name is a clean UX pattern for contextual help — it doesn't compete w
 
 **CLAUDE.md recommendations:**
 None this turn.
+
+---
+
+## 2026-04-17 — Entry 24
+
+**Summary:**
+Committed four pending changes as separate commits (description hover, JSON descriptions, settings restore, diary). Then analysed the Werewolf ruleset for strategic utility imbalance and created `rulesets/werewolf-diverse-utility.json`. The key insight is that in the base ruleset every action scores ±1 regardless of game impact — but some actions are categorically more consequential: finding the Werewolf ends the game, eliminating the Seer destroys the village's intelligence permanently, the Doctor wasting their protection on the wolf is a double-loss for the village. Calibrated utilities: Seer inspect/wolf eliminate Seer ±3; wolf eliminate Doctor ±2; vote eliminates wolf −3; vote eliminates Seer/Doctor −2; Doctor protects wolf affected +2; Seer secrecy −2; wolf vote +2; wolf win condition +2. Added to the ruleset selector in index.html.
+
+**Sentiments:**
+This was a satisfying analytical exercise — game theory reasoning mapped cleanly onto the utility field. The visualizer should now show Seer and Werewolf as the highest-stakes nodes with the diverse utility variant, which is exactly what the graph should communicate. The base ruleset stays flat and symmetric (useful for structure), while the diverse variant shows strategic depth.
+
+**CLAUDE.md recommendations:**
+None this turn.
