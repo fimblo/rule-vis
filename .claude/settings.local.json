@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -v \"^\\\\.$\")",
+      "Bash(grep -v \"^\\\\.\\\\.$\")"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"systemMessage\": \"DIARY REMINDER: Append a new entry to diary.md with: 1) timestamp, 2) summary of what was discussed, 3) sentiments on the project and relationship, 4) any CLAUDE.md recommendations.\"}'",
+            "statusMessage": "Diary reminder"
+          }
+        ]
+      }
+    ]
+  }
+}
