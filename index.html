@@ -448,9 +448,15 @@
   const dimSlider   = document.getElementById('dim-slider');
   let dimOpacity = Number(dimSlider.value);
 
+  function applyDimOpacity() {
+    cy.edges().forEach(edge => {
+      edge.style('opacity', edge.hasClass('phase-inactive') ? dimOpacity : 1);
+    });
+  }
+
   dimSlider.addEventListener('input', () => {
     dimOpacity = Number(dimSlider.value);
-    cy.edges('.phase-inactive').style('opacity', dimOpacity);
+    applyDimOpacity();
   });
 
   let expandedData = null;
@@ -462,8 +468,8 @@
       const ep = edge.data('phase');
       const inactive = active !== null && ep !== null && ep !== active;
       edge.toggleClass('phase-inactive', inactive);
-      edge.style('opacity', inactive ? dimOpacity : 1);
     });
+    applyDimOpacity();
 
     // Recompute net utility per node for the active phase
     const rules = expandedData.rules.filter(
@@ -506,8 +512,8 @@
       const sm = edge.data('schedule_months');
       const inactive = monthIdx !== 0 && sm !== null && !sm.includes(monthIdx);
       edge.toggleClass('phase-inactive', inactive);
-      edge.style('opacity', inactive ? dimOpacity : 1);
     });
+    applyDimOpacity();
 
     const rules = expandedData.rules.filter(r => {
       if (monthIdx === 0) return true;
