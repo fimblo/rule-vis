@@ -2,7 +2,7 @@
   "schema_version": "0.6.0",
   "ruleset": {
     "name": "Command-and-Control Org",
-    "description": "## Command-and-Control Engineering Org\n\nA traditional hierarchical software engineering company. Authority flows downward; information flows upward.\n\n**Chain of command:**\nBoard → CEO → VP Engineering → Engineering Managers → Engineering Teams\n\n**Power dynamics:**\n- *CEO* — sets strategy unilaterally, may reorganise at will\n- *VP Engineering* — cascades goals, conducts stack-ranking, controls promotions\n- *Engineering Managers* — enforce compliance, submit weekly reports, conduct appraisals\n- *HR* — creates binding policies, controls compensation, can PIP any engineer independently\n- *Board* — ultimate authority; may remove CEO\n\n**Stack-ranking:** Engineers are formally ranked each quarter. The bottom 10% are identified for performance improvement or exit. Ranking is conducted by the VP Engineering across all teams.\n\n**Micro-management:** Significant technical decisions require manager sign-off. Cross-team coordination must be routed through managers. External communications require VP or HR approval.\n\n**Cadences modelled:**\n- Weekly: team status meetings, manager 1:1s, manager-to-VP written reports\n- Monthly: CEO all-hands (pre-screened Q&A), headcount forecasts, board business review\n- Quarterly: goal cascade from CEO, formal performance appraisals, stack-ranking\n- Yearly: compensation review (HR-decided), promotion decisions (VP + HR)",
+    "description": "## Command-and-Control Engineering Org\n\nA traditional hierarchical software engineering company. Authority flows downward; information flows upward.\n\n**Chain of command:**\nBoard → CEO → VP Engineering → Engineering Managers → Engineering Teams\n\n**Power dynamics:**\n- *CEO* — sets strategy unilaterally, may reorganise at will\n- *VP Engineering* — cascades goals, conducts stack-ranking, controls promotions\n- *Engineering Managers (×5)* — enforce compliance, submit weekly reports, conduct appraisals, feed ranking data to VP\n- *HR* — creates binding policies, controls compensation, can PIP any engineer independently\n- *Board* — ultimate authority; may remove CEO\n\n**Stack-ranking:** Each manager submits per-engineer ranking data quarterly. The VP consolidates across all five teams, identifies the bottom 10%, and flags them for HR review.\n\n**Micro-management:** Significant technical decisions require manager sign-off. Cross-team coordination must be routed through managers. External communications require VP or HR approval.\n\n**Cadences modelled:**\n- Weekly: team status meetings, manager 1:1s, manager-to-VP written reports\n- Monthly: CEO all-hands (pre-screened Q&A), headcount forecasts, board business review\n- Quarterly: goal cascade from CEO, formal performance appraisals, manager ranking submissions, VP stack-ranking\n- Yearly: compensation review (HR-decided), promotion decisions (VP + HR)",
     "source": "Composite model — traditional hierarchical engineering org"
   },
   "calendar": { "unit": "month" },
@@ -12,7 +12,11 @@
     { "id": "ceo",               "name": "CEO",               "type": "person",    "faction": "executive" },
     { "id": "vp_engineering",    "name": "VP Engineering",    "type": "person",    "faction": "executive" },
     { "id": "hr",                "name": "HR",                "type": "team",      "faction": "hr" },
-    { "id": "manager",           "name": "Eng Manager",       "type": "person",    "faction": "management" },
+    { "id": "manager_a",         "name": "Manager A",         "type": "person",    "faction": "management" },
+    { "id": "manager_b",         "name": "Manager B",         "type": "person",    "faction": "management" },
+    { "id": "manager_c",         "name": "Manager C",         "type": "person",    "faction": "management" },
+    { "id": "manager_d",         "name": "Manager D",         "type": "person",    "faction": "management" },
+    { "id": "manager_e",         "name": "Manager E",         "type": "person",    "faction": "management" },
     { "id": "team_a",            "name": "Team A",            "type": "team",      "faction": "engineering" },
     { "id": "team_b",            "name": "Team B",            "type": "team",      "faction": "engineering" },
     { "id": "team_c",            "name": "Team C",            "type": "team",      "faction": "engineering" },
@@ -22,7 +26,8 @@
     { "id": "monthly_allhands",  "name": "All-Hands",        "type": "process",   "faction": null }
   ],
   "cohorts": {
-    "eng_teams": ["team_a", "team_b", "team_c", "team_d", "team_e"]
+    "eng_teams": ["team_a", "team_b", "team_c", "team_d", "team_e"],
+    "managers":  ["manager_a", "manager_b", "manager_c", "manager_d", "manager_e"]
   },
   "rules": [
 
@@ -91,7 +96,7 @@
       "rule_name": "manager_must_report_performance_to_hr",
       "rule_type": "obligation",
       "authority_entity": "org_policy",
-      "subject_entity": "manager",
+      "subject_entity": "@managers",
       "authority_utility": 0,
       "subject_utility": -1,
       "affected_entity": "hr",
@@ -106,9 +111,7 @@
       "subject_entity": "@eng_teams",
       "authority_utility": 0,
       "subject_utility": -2,
-      "affected_entity": "manager",
-      "affected_utility": 0,
-      "description": "Engineers must obtain manager sign-off before implementing any significant technical decision: architectural choices, external library adoption, infrastructure changes, or estimates that affect sprint commitments. Decisions made without approval are subject to reversal."
+      "description": "Engineers must obtain their manager's sign-off before implementing any significant technical decision: architectural choices, external library adoption, infrastructure changes, or estimates that affect sprint commitments. Decisions made without approval are subject to reversal."
     },
     {
       "id": "r08",
@@ -135,7 +138,7 @@
       "rule_name": "hiring_requires_dual_approval",
       "rule_type": "obligation",
       "authority_entity": "org_policy",
-      "subject_entity": "manager",
+      "subject_entity": "@managers",
       "authority_utility": 0,
       "subject_utility": -1,
       "description": "Managers may not extend, negotiate, or verbally commit to any offer without co-approval from VP Engineering (headcount budget) and HR (grade, compensation band). Informal offers made without approval are void."
@@ -160,7 +163,7 @@
       "rule_type": "obligation",
       "schedule": { "months": "all" },
       "authority_entity": "org_policy",
-      "subject_entity": "manager",
+      "subject_entity": "@managers",
       "authority_utility": 0,
       "subject_utility": -1,
       "affected_entity": "@eng_teams",
@@ -173,7 +176,7 @@
       "rule_type": "obligation",
       "schedule": { "months": "all" },
       "authority_entity": "org_policy",
-      "subject_entity": "manager",
+      "subject_entity": "@managers",
       "authority_utility": 0,
       "subject_utility": -2,
       "affected_entity": "vp_engineering",
@@ -200,7 +203,7 @@
       "rule_type": "obligation",
       "schedule": { "months": "all" },
       "authority_entity": "org_policy",
-      "subject_entity": "manager",
+      "subject_entity": "@managers",
       "authority_utility": 0,
       "subject_utility": -1,
       "affected_entity": "vp_engineering",
@@ -230,7 +233,7 @@
       "subject_entity": "vp_engineering",
       "authority_utility": 0,
       "subject_utility": -1,
-      "affected_entity": "manager",
+      "affected_entity": "@managers",
       "affected_utility": -1,
       "description": "At the start of each quarter, the CEO issues goals to VP Engineering. The VP must cascade these verbatim to managers within one week. Managers then decompose goals into team-level targets. Neither the VP nor managers may modify the CEO's goals — they can only add detail below them."
     },
@@ -240,7 +243,7 @@
       "rule_type": "obligation",
       "schedule": { "months": [3, 6, 9, 12] },
       "authority_entity": "org_policy",
-      "subject_entity": "manager",
+      "subject_entity": "@managers",
       "authority_utility": 0,
       "subject_utility": -2,
       "affected_entity": "@eng_teams",
@@ -249,6 +252,19 @@
     },
     {
       "id": "r19",
+      "rule_name": "managers_submit_ranking_input",
+      "rule_type": "obligation",
+      "schedule": { "months": [3, 6, 9, 12] },
+      "authority_entity": "org_policy",
+      "subject_entity": "@managers",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "affected_entity": "vp_engineering",
+      "affected_utility": 1,
+      "description": "Before the VP conducts the quarterly stack ranking, each manager must submit a ranked list of their direct reports with supporting evidence from the appraisals. The VP cannot run the cross-team ranking without this input. Late submissions delay the process for all teams."
+    },
+    {
+      "id": "r20",
       "rule_name": "quarterly_stack_ranking",
       "rule_type": "obligation",
       "schedule": { "months": [3, 6, 9, 12] },
@@ -258,11 +274,11 @@
       "subject_utility": -1,
       "affected_entity": "@eng_teams",
       "affected_utility": -2,
-      "description": "VP Engineering stack-ranks all engineers across all five teams each quarter based on manager appraisal scores. The bottom 10% are flagged for HR review and placed on a mandatory improvement track. Rankings are not shared with engineers but inform all subsequent HR decisions."
+      "description": "VP Engineering consolidates the five managers' ranking inputs and stack-ranks all engineers across all teams. The bottom 10% are flagged for HR review and placed on a mandatory improvement track. Rankings are not shared with engineers but inform all subsequent HR decisions."
     },
 
     {
-      "id": "r20",
+      "id": "r21",
       "rule_name": "annual_compensation_review",
       "rule_type": "obligation",
       "schedule": { "months": [12] },
@@ -275,7 +291,7 @@
       "description": "HR conducts the annual compensation review each December using the four quarterly stack rankings as the primary input. Manager input is advisory. HR and VP Engineering make the final decision. Engineers learn their outcome; the methodology is not disclosed."
     },
     {
-      "id": "r21",
+      "id": "r22",
       "rule_name": "annual_promotion_decisions",
       "rule_type": "obligation",
       "schedule": { "months": [12] },
@@ -289,20 +305,20 @@
     },
 
     {
-      "id": "r22",
+      "id": "r23",
       "rule_name": "manager_chairs_status_meeting",
       "rule_type": "obligation",
       "schedule": { "months": "all" },
       "authority_entity": "org_policy",
-      "subject_entity": "manager",
+      "subject_entity": "@managers",
       "authority_utility": 0,
       "subject_utility": -1,
       "affected_entity": "weekly_status_mtg",
       "affected_utility": 0,
-      "description": "The manager must prepare and chair the weekly team status meeting. This includes setting the agenda, collecting updates in advance, tracking actions, and filing a summary in the project tracking system. It is the manager's primary tool for maintaining visibility into team output."
+      "description": "Each manager must prepare and chair their team's weekly status meeting. This includes setting the agenda, collecting updates in advance, tracking actions, and filing a summary in the project tracking system. It is each manager's primary tool for maintaining visibility into their team's output."
     },
     {
-      "id": "r23",
+      "id": "r24",
       "rule_name": "ceo_hosts_monthly_allhands",
       "rule_type": "obligation",
       "schedule": { "months": "all" },
