@@ -414,3 +414,16 @@ The contrast between Teal and C&C is stark even just reading the utility values.
 
 **CLAUDE.md recommendations:**
 None this session — schema is current at 0.6.0, conventions unchanged.
+
+---
+
+## 2026-04-20 — Entry 33
+
+**Summary:**
+Fixed several bugs in the dim slider feature. The `cy.on('tap', 'core')` call was throwing a console warning on every render because `core` is not a valid Cytoscape 3.28 event selector — fixed to `cy.on('tap', evt => { if (evt.target === cy) ... })`. The dim slider itself went through three failed attempts: (1) `cy.style().selector().update()` silently failed; (2) `cy.edges('.phase-inactive').style()` on a collection was unreliable; (3) a `Set` tracking inactive edge IDs was inaccessible from the scope `applyDimOpacity` ran in (console confirmed: `inactiveEdges.size === 0` despite the filter running). Final fix: `applyDimOpacity()` reads `schedule_months`/`phase` directly from edge data and the current `phaseSlider.value` — no shared state, no Cytoscape class API, no removeStyle.
+
+**Sentiments:**
+Three attempts at the same bug is too many. The turning point was the user offering to run console commands — `inactiveEdges.size === 0` immediately ruled out the Set approach. Should have asked for that data after the first failed attempt, not the third. The user made this explicit: "Next time we get a little stuck, remember I'm also someone with agency."
+
+**CLAUDE.md recommendations:**
+When debugging a browser-side JS issue that isn't reproducing cleanly from reading the code, ask the user to run targeted console commands early — not as a last resort. A one-liner like `inactiveEdges.size` is faster than three code-change cycles.
