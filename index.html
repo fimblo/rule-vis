@@ -111,6 +111,19 @@
     }
     #phase-bar[hidden] { display: none; }
     #phase-bar label { font-size: 0.75rem; color: #6b7280; white-space: nowrap; }
+    #dim-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      border-left: 1px solid #374151;
+      padding-left: 16px;
+    }
+    #dim-slider {
+      width: 80px;
+      accent-color: #6366f1;
+      cursor: pointer;
+    }
     #phase-track {
       position: relative;
       flex: 1;
@@ -183,6 +196,10 @@
   <div id="phase-track">
     <input type="range" id="phase-slider" min="0" value="0" step="1">
     <div id="phase-labels"></div>
+  </div>
+  <div id="dim-control">
+    <label for="dim-slider">Dim</label>
+    <input type="range" id="dim-slider" min="0.05" max="0.9" step="0.05" value="0.25">
   </div>
 </div>
 
@@ -428,6 +445,11 @@
   const phaseBar    = document.getElementById('phase-bar');
   const phaseSlider = document.getElementById('phase-slider');
   const phaseLabels = document.getElementById('phase-labels');
+  const dimSlider   = document.getElementById('dim-slider');
+
+  dimSlider.addEventListener('input', () => {
+    cy.style().selector('edge.phase-inactive').style('opacity', Number(dimSlider.value)).update();
+  });
 
   let expandedData = null;
 
