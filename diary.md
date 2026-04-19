@@ -427,3 +427,16 @@ Three attempts at the same bug is too many. The turning point was the user offer
 
 **CLAUDE.md recommendations:**
 When debugging a browser-side JS issue that isn't reproducing cleanly from reading the code, ask the user to run targeted console commands early — not as a last resort. A one-liner like `inactiveEdges.size` is faster than three code-change cycles.
+
+---
+
+## 2026-04-20 — Entry 34
+
+**Summary:**
+Two real bugs fixed: (1) `cy.on('tap', 'core')` invalid selector warning on every render — replaced with `cy.on('tap', evt => { if (evt.target === cy) ... })`. (2) dim slider overriding stylesheet default edge opacity (0.12) with inline 1 when no filter was active — fixed by returning early when sliderVal=0 and using `''` instead of `1` to restore stylesheet defaults for active edges. Several red herrings along the way: `cy.style().selector().update()` (silent failure), `cy.edges('.phase-inactive').style()` (unreliable collection method), `hasClass` (scoping mystery), `inactiveEdges` Set (inaccessible from applyDimOpacity's scope). Final approach: applyDimOpacity computes inactive state directly from edge data and phaseSlider.value — stateless, no Cytoscape class API. Also diagnosed a false alarm: user reported dim slider "only working on some edges" (the annual rules). Turned out the calendar was set to March — a quarter-end month where quarterly rules are *active*, so correctly bright. Only annual (December-only) rules dim in March. Not a bug.
+
+**Sentiments:**
+The false alarm was instructive. The user saw "some edges responding" and assumed bug. The correct response was to ask a clarifying question ("what month is selected?") before assuming anything was broken. The visualization is doing exactly what it should — March shows quarterly rules as active overhead, which is the point. Should have asked sooner rather than hypothesising.
+
+**CLAUDE.md recommendations:**
+Two things: (1) Ask user for console data after first failed fix attempt, not later. (2) When a user reports unexpected behaviour, double-check their assumptions first — ask a targeted question (e.g. "what month/phase is selected?") before assuming the code is wrong.
