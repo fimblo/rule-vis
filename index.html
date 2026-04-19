@@ -328,7 +328,7 @@
     }));
 
     const actsOnEdges = data.rules
-      .filter(r => r.affected_entity != null)
+      .filter(r => r.affected_entity != null && !r.affected_entity.startsWith('@'))
       .map(r => ({
         data: {
           id:               `${r.id}-obj`,
