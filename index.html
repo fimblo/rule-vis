@@ -712,7 +712,7 @@
       tooltip.hidden = true;
     });
     cy.on('tap', 'edge', evt => showTooltip(evt, evt.target.data()));
-    cy.on('tap', 'core', ()  => { tooltip.hidden = true; });
+    cy.on('tap', evt  => { if (evt.target === cy) tooltip.hidden = true; });
 
     const layout = cy.layout({
       name:                        'cose',
