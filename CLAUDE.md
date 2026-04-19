@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Status
 
-Early prototype. The data model is defined (schema v0.2.0), three rulesets exist (tic-tac-toe, Werewolf, Munchkin simplified), and an interactive Cytoscape.js visualizer is live on GitHub Pages. Features so far: hover-to-highlight, click-to-mute nodes, edge tooltips with per-party utility, net utility per node (border color + hover tooltip), force-directed layout.
+Early prototype. Schema v0.6.0. Rulesets: tic-tac-toe, Werewolf, Werewolf (Diverse Utility), Munchkin (Simplified), Teal Engineering Org. Visualizer on GitHub Pages. Features: hover-to-highlight, click-to-mute nodes, edge tooltips, net utility per node (border color + hover), force-directed layout, cohort expansion, game phase slider, calendar month slider, two-level game/variant selector, dynamic legend, markdown ruleset descriptions.
 
 ## What This Project Is
 
@@ -24,7 +24,7 @@ A general-purpose tool for translating human-readable rule sets into a structure
 
 ## Core Data Model
 
-Schema version: **0.4.0**
+Schema version: **0.6.0**
 
 A rule is a tuple:
 ```
@@ -51,6 +51,8 @@ A rule is a tuple:
 **Cohorts (v0.4.0):** An optional top-level `cohorts` object maps names to arrays of entity IDs. Any entity field in a rule may reference a cohort with `@cohort_name`. The visualizer expands each cohort reference into one rule per member at load time, generating IDs like `r01_werewolf`. Only one cohort reference per rule is supported (first of subject, affected, authority wins). Use cohorts to avoid repeating identical rules across multiple entities.
 
 **Phases (v0.5.0):** An optional top-level `phases` array defines an ordered list of named phases (e.g. `["night", "day"]` or `["Q1", "Q2", "Q3", "Q4"]`). Individual rules may carry an optional `"phase"` string field matching one of those names. Rules with no `phase` field are always active. When a ruleset defines phases, the visualizer shows a slider below the header; selecting a phase dims all edges whose rule belongs to a different phase. Rules without a phase are never dimmed.
+
+**Calendar (v0.6.0):** For rulesets anchored to a real-world calendar (e.g. org policies), use `"calendar": { "unit": "month" }` at the top level instead of `phases`. Individual rules carry an optional `"schedule": { "months": [...] }` field with a 1-indexed array of months (e.g. `[3, 6, 9, 12]` for quarter-end months). The shorthand `"months": "all"` marks a rule as active every month but still calendar-anchored (distinct from no `schedule` field = structurally always-on). When a ruleset defines `calendar`, the visualizer shows a month slider (Jan–Dec) instead of a phase slider. `phases` and `calendar` are mutually exclusive.
 
 `faction` is an optional entity field (string or null) grouping entities into teams — e.g. `"village"` vs `"werewolf"`. Not yet visualized but present in data.
 
