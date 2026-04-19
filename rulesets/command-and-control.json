@@ -1,0 +1,291 @@
+{
+  "schema_version": "0.6.0",
+  "ruleset": {
+    "name": "Command-and-Control Org",
+    "description": "## Command-and-Control Engineering Org\n\nA traditional hierarchical software engineering company. Authority flows downward; information flows upward.\n\n**Chain of command:**\nBoard → CEO → VP Engineering → Engineering Managers → Engineering Teams\n\n**Power dynamics:**\n- *CEO* — sets strategy unilaterally, may reorganise at will\n- *VP Engineering* — cascades goals, conducts stack-ranking, controls promotions\n- *Engineering Managers* — enforce compliance, submit weekly reports, conduct appraisals\n- *HR* — creates binding policies, controls compensation, can PIP any engineer independently\n- *Board* — ultimate authority; may remove CEO\n\n**Stack-ranking:** Engineers are formally ranked each quarter. The bottom 10% are identified for performance improvement or exit. Ranking is conducted by the VP Engineering across all teams.\n\n**Micro-management:** Significant technical decisions require manager sign-off. Cross-team coordination must be routed through managers. External communications require VP or HR approval.\n\n**Cadences modelled:**\n- Weekly: team status meetings, manager 1:1s, manager-to-VP written reports\n- Monthly: CEO all-hands (pre-screened Q&A), headcount forecasts, board business review\n- Quarterly: goal cascade from CEO, formal performance appraisals, stack-ranking\n- Yearly: compensation review (HR-decided), promotion decisions (VP + HR)",
+    "source": "Composite model — traditional hierarchical engineering org"
+  },
+  "calendar": { "unit": "month" },
+  "entities": [
+    { "id": "org_policy",        "name": "Org Policy",        "type": "authority", "faction": null },
+    { "id": "board",             "name": "Board",             "type": "group",     "faction": "ownership" },
+    { "id": "ceo",               "name": "CEO",               "type": "person",    "faction": "executive" },
+    { "id": "vp_engineering",    "name": "VP Engineering",    "type": "person",    "faction": "executive" },
+    { "id": "hr",                "name": "HR",                "type": "team",      "faction": "hr" },
+    { "id": "manager",           "name": "Eng Manager",       "type": "person",    "faction": "management" },
+    { "id": "team_a",            "name": "Team A",            "type": "team",      "faction": "engineering" },
+    { "id": "team_b",            "name": "Team B",            "type": "team",      "faction": "engineering" },
+    { "id": "team_c",            "name": "Team C",            "type": "team",      "faction": "engineering" },
+    { "id": "team_d",            "name": "Team D",            "type": "team",      "faction": "engineering" },
+    { "id": "team_e",            "name": "Team E",            "type": "team",      "faction": "engineering" },
+    { "id": "weekly_status_mtg", "name": "Status Meeting",   "type": "process",   "faction": null },
+    { "id": "monthly_allhands",  "name": "All-Hands",        "type": "process",   "faction": null }
+  ],
+  "cohorts": {
+    "eng_teams": ["team_a", "team_b", "team_c", "team_d", "team_e"]
+  },
+  "rules": [
+
+    {
+      "id": "r01",
+      "rule_name": "board_may_remove_ceo",
+      "rule_type": "permission",
+      "authority_entity": "org_policy",
+      "subject_entity": "board",
+      "authority_utility": 0,
+      "subject_utility": 2,
+      "affected_entity": "ceo",
+      "affected_utility": -2,
+      "description": "The Board may remove the CEO at any time, with or without cause. The CEO reports to the Board and holds authority only at the Board's discretion. This ultimate veto shapes every decision the CEO makes."
+    },
+    {
+      "id": "r02",
+      "rule_name": "ceo_sets_strategy_unilaterally",
+      "rule_type": "permission",
+      "authority_entity": "org_policy",
+      "subject_entity": "ceo",
+      "authority_utility": 0,
+      "subject_utility": 2,
+      "affected_entity": "@eng_teams",
+      "affected_utility": -1,
+      "description": "The CEO sets and may change strategic direction, priorities, and resource allocation without consulting engineering teams. Teams learn of strategic changes through the management chain, not directly."
+    },
+    {
+      "id": "r03",
+      "rule_name": "ceo_may_reorganize",
+      "rule_type": "permission",
+      "authority_entity": "org_policy",
+      "subject_entity": "ceo",
+      "authority_utility": 0,
+      "subject_utility": 2,
+      "affected_entity": "@eng_teams",
+      "affected_utility": -2,
+      "description": "The CEO may restructure, merge, split, or dissolve engineering teams at any time without prior consultation. Reorganisations are announced, not negotiated. Teams have no formal recourse."
+    },
+    {
+      "id": "r04",
+      "rule_name": "hr_binding_policy_authority",
+      "rule_type": "permission",
+      "authority_entity": "org_policy",
+      "subject_entity": "hr",
+      "authority_utility": 0,
+      "subject_utility": 2,
+      "affected_entity": "@eng_teams",
+      "affected_utility": -1,
+      "description": "HR may create and enforce policies binding on all engineering staff without engineering input or consent. Policies cover communication standards, work hours, tooling approvals, and conduct. Non-compliance is a disciplinary matter."
+    },
+    {
+      "id": "r05",
+      "rule_name": "pip_authority",
+      "rule_type": "permission",
+      "authority_entity": "org_policy",
+      "subject_entity": "hr",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "@eng_teams",
+      "affected_utility": -2,
+      "description": "HR may place any engineer on a Performance Improvement Plan independently of manager recommendation. PIPs are formal, time-bound, and typically precede termination. The bar for successful completion is set by HR."
+    },
+    {
+      "id": "r06",
+      "rule_name": "manager_must_report_performance_to_hr",
+      "rule_type": "obligation",
+      "authority_entity": "org_policy",
+      "subject_entity": "manager",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "affected_entity": "hr",
+      "affected_utility": 1,
+      "description": "Managers must escalate any engineer's sustained underperformance to HR within 30 days of identification. They may not handle performance issues informally or keep them within the team. This ensures HR visibility and limits manager discretion."
+    },
+    {
+      "id": "r07",
+      "rule_name": "manager_approval_gate",
+      "rule_type": "obligation",
+      "authority_entity": "org_policy",
+      "subject_entity": "@eng_teams",
+      "authority_utility": 0,
+      "subject_utility": -2,
+      "affected_entity": "manager",
+      "affected_utility": 0,
+      "description": "Engineers must obtain manager sign-off before implementing any significant technical decision: architectural choices, external library adoption, infrastructure changes, or estimates that affect sprint commitments. Decisions made without approval are subject to reversal."
+    },
+    {
+      "id": "r08",
+      "rule_name": "no_direct_cross_team_coordination",
+      "rule_type": "prohibition",
+      "authority_entity": "org_policy",
+      "subject_entity": "@eng_teams",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "description": "Engineers may not directly coordinate with other engineering teams on shared work, dependencies, or priorities. All inter-team requests must be routed through their manager, who coordinates with the other team's manager or escalates to the VP."
+    },
+    {
+      "id": "r09",
+      "rule_name": "no_external_communication_without_approval",
+      "rule_type": "prohibition",
+      "authority_entity": "org_policy",
+      "subject_entity": "@eng_teams",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "description": "Engineers may not communicate with customers, press, analysts, or on public forums about their work without prior written approval from VP Engineering or HR. Violations are a disciplinary matter."
+    },
+    {
+      "id": "r10",
+      "rule_name": "hiring_requires_dual_approval",
+      "rule_type": "obligation",
+      "authority_entity": "org_policy",
+      "subject_entity": "manager",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "description": "Managers may not extend, negotiate, or verbally commit to any offer without co-approval from VP Engineering (headcount budget) and HR (grade, compensation band). Informal offers made without approval are void."
+    },
+
+    {
+      "id": "r11",
+      "rule_name": "weekly_status_meeting",
+      "rule_type": "obligation",
+      "schedule": { "months": "all" },
+      "authority_entity": "org_policy",
+      "subject_entity": "@eng_teams",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "affected_entity": "weekly_status_mtg",
+      "affected_utility": 0,
+      "description": "Each engineering team attends a weekly status meeting chaired by their manager. The agenda is set by the manager and focuses on progress against commitments, blockers, and upcoming deliverables. Engineers report to the manager; discussion is structured and time-boxed."
+    },
+    {
+      "id": "r12",
+      "rule_name": "manager_one_on_ones",
+      "rule_type": "obligation",
+      "schedule": { "months": "all" },
+      "authority_entity": "org_policy",
+      "subject_entity": "manager",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "affected_entity": "@eng_teams",
+      "affected_utility": -1,
+      "description": "Managers must hold a weekly 1:1 with each direct report. The agenda is manager-driven: status, blockers, and performance against targets. Engineers do not set the agenda. Notes are filed in the HR system and may be referenced in performance reviews."
+    },
+    {
+      "id": "r13",
+      "rule_name": "manager_weekly_report_to_vp",
+      "rule_type": "obligation",
+      "schedule": { "months": "all" },
+      "authority_entity": "org_policy",
+      "subject_entity": "manager",
+      "authority_utility": 0,
+      "subject_utility": -2,
+      "affected_entity": "vp_engineering",
+      "affected_utility": 1,
+      "description": "Managers submit a written weekly status report to VP Engineering every Friday. The report covers: delivery progress, team headcount status, any performance concerns, risks, and dependencies. Late or incomplete reports are flagged in the manager's own performance record."
+    },
+
+    {
+      "id": "r14",
+      "rule_name": "monthly_allhands_attendance",
+      "rule_type": "obligation",
+      "schedule": { "months": "all" },
+      "authority_entity": "org_policy",
+      "subject_entity": "@eng_teams",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "affected_entity": "monthly_allhands",
+      "affected_utility": 0,
+      "description": "All engineers attend the monthly all-hands hosted by the CEO. The CEO presents company performance, priorities, and decisions. Questions must be submitted in advance and are pre-screened; spontaneous questions from the floor are not permitted."
+    },
+    {
+      "id": "r15",
+      "rule_name": "monthly_headcount_forecast",
+      "rule_type": "obligation",
+      "schedule": { "months": "all" },
+      "authority_entity": "org_policy",
+      "subject_entity": "manager",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "affected_entity": "vp_engineering",
+      "affected_utility": 1,
+      "description": "Managers submit a monthly headcount, utilisation, and budget forecast to VP Engineering. Variance against prior-month forecast must be explained. These reports feed into the CEO's board-level financial reporting."
+    },
+    {
+      "id": "r16",
+      "rule_name": "monthly_board_report",
+      "rule_type": "obligation",
+      "schedule": { "months": "all" },
+      "authority_entity": "org_policy",
+      "subject_entity": "ceo",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "affected_entity": "board",
+      "affected_utility": 2,
+      "description": "The CEO prepares and presents a monthly business review to the Board covering: financial performance, delivery milestones, headcount, risks, and strategic progress. The Board may request additional detail or direct course corrections."
+    },
+
+    {
+      "id": "r17",
+      "rule_name": "quarterly_goal_cascade",
+      "rule_type": "obligation",
+      "schedule": { "months": [3, 6, 9, 12] },
+      "authority_entity": "org_policy",
+      "subject_entity": "vp_engineering",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "affected_entity": "manager",
+      "affected_utility": -1,
+      "description": "At the start of each quarter, the CEO issues goals to VP Engineering. The VP must cascade these verbatim to managers within one week. Managers then decompose goals into team-level targets. Neither the VP nor managers may modify the CEO's goals — they can only add detail below them."
+    },
+    {
+      "id": "r18",
+      "rule_name": "quarterly_performance_appraisals",
+      "rule_type": "obligation",
+      "schedule": { "months": [3, 6, 9, 12] },
+      "authority_entity": "org_policy",
+      "subject_entity": "manager",
+      "authority_utility": 0,
+      "subject_utility": -2,
+      "affected_entity": "@eng_teams",
+      "affected_utility": -1,
+      "description": "Managers submit formal written performance appraisals for each direct report quarterly. Appraisals use a standardised rubric set by HR. Scores feed into the stack ranking. Engineers receive their score but may not contest the rubric or appeal to HR directly."
+    },
+    {
+      "id": "r19",
+      "rule_name": "quarterly_stack_ranking",
+      "rule_type": "obligation",
+      "schedule": { "months": [3, 6, 9, 12] },
+      "authority_entity": "org_policy",
+      "subject_entity": "vp_engineering",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "affected_entity": "@eng_teams",
+      "affected_utility": -2,
+      "description": "VP Engineering stack-ranks all engineers across all five teams each quarter based on manager appraisal scores. The bottom 10% are flagged for HR review and placed on a mandatory improvement track. Rankings are not shared with engineers but inform all subsequent HR decisions."
+    },
+
+    {
+      "id": "r20",
+      "rule_name": "annual_compensation_review",
+      "rule_type": "obligation",
+      "schedule": { "months": [12] },
+      "authority_entity": "org_policy",
+      "subject_entity": "hr",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "@eng_teams",
+      "affected_utility": 0,
+      "description": "HR conducts the annual compensation review each December using the four quarterly stack rankings as the primary input. Manager input is advisory. HR and VP Engineering make the final decision. Engineers learn their outcome; the methodology is not disclosed."
+    },
+    {
+      "id": "r21",
+      "rule_name": "annual_promotion_decisions",
+      "rule_type": "obligation",
+      "schedule": { "months": [12] },
+      "authority_entity": "org_policy",
+      "subject_entity": "vp_engineering",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "@eng_teams",
+      "affected_utility": -1,
+      "description": "Promotions are decided jointly by VP Engineering and HR in December, based primarily on stack ranking position and tenure. Manager recommendations are considered but are not determinative. Engineers who have been in the bottom 20% of any quarter in the year are ineligible."
+    }
+  ]
+}
