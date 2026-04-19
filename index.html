@@ -451,18 +451,19 @@
   function applyDimOpacity() {
     const sliderVal = Number(phaseSlider.value);
     cy.edges().forEach(edge => {
-      let inactive = false;
-      if (sliderVal !== 0) {
-        const sm = edge.data('schedule_months');
-        const ep = edge.data('phase');
-        if (sm !== null && sm !== undefined) {
-          inactive = !sm.includes(sliderVal);
-        } else if (ep !== null && ep !== undefined && expandedData?.phases) {
-          const active = expandedData.phases[sliderVal - 1];
-          inactive = ep !== active;
-        }
+      if (sliderVal === 0) {
+        edge.removeStyle('opacity');
+        return;
       }
-      edge.style('opacity', inactive ? dimOpacity : 1);
+      const sm = edge.data('schedule_months');
+      const ep = edge.data('phase');
+      let inactive = false;
+      if (sm !== null && sm !== undefined) {
+        inactive = !sm.includes(sliderVal);
+      } else if (ep !== null && ep !== undefined && expandedData?.phases) {
+        inactive = ep !== expandedData.phases[sliderVal - 1];
+      }
+      edge.style('opacity', inactive ? dimOpacity : '');
     });
   }
 
