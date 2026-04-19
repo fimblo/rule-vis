@@ -286,6 +286,33 @@
       "affected_entity": "@eng_teams",
       "affected_utility": -1,
       "description": "Promotions are decided jointly by VP Engineering and HR in December, based primarily on stack ranking position and tenure. Manager recommendations are considered but are not determinative. Engineers who have been in the bottom 20% of any quarter in the year are ineligible."
+    },
+
+    {
+      "id": "r22",
+      "rule_name": "manager_chairs_status_meeting",
+      "rule_type": "obligation",
+      "schedule": { "months": "all" },
+      "authority_entity": "org_policy",
+      "subject_entity": "manager",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "affected_entity": "weekly_status_mtg",
+      "affected_utility": 0,
+      "description": "The manager must prepare and chair the weekly team status meeting. This includes setting the agenda, collecting updates in advance, tracking actions, and filing a summary in the project tracking system. It is the manager's primary tool for maintaining visibility into team output."
+    },
+    {
+      "id": "r23",
+      "rule_name": "ceo_hosts_monthly_allhands",
+      "rule_type": "obligation",
+      "schedule": { "months": "all" },
+      "authority_entity": "org_policy",
+      "subject_entity": "ceo",
+      "authority_utility": 0,
+      "subject_utility": -1,
+      "affected_entity": "monthly_allhands",
+      "affected_utility": 0,
+      "description": "The CEO must prepare and host the monthly all-hands. This includes coordinating with department heads for slides, scripting the narrative, pre-screening submitted questions, and presenting the company's performance and direction. Though it projects authority, the preparation overhead is significant."
     }
   ]
 }
