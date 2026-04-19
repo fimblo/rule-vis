@@ -243,6 +243,14 @@
     return 'neu';
   }
 
+  const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  function resolveScheduleMonths(schedule) {
+    if (!schedule) return null;
+    if (schedule.months === 'all') return [1,2,3,4,5,6,7,8,9,10,11,12];
+    return schedule.months ?? null;
+  }
+
   function expandCohorts(data) {
     const cohorts = data.cohorts ?? {};
     const fields  = ['subject_entity', 'affected_entity', 'authority_entity'];
@@ -306,6 +314,7 @@
         rule_type:        r.rule_type,
         description:      r.description,
         phase:            r.phase ?? null,
+        schedule_months:  resolveScheduleMonths(r.schedule),
         color:            edgeColor(r.subject_utility),
         edgeKind:         'governs',
         authorityName:    nameOf[r.authority_entity],
@@ -328,6 +337,8 @@
           rule_type:        r.rule_type,
           description:      r.description,
           phase:            r.phase ?? null,
+          phase:            r.phase ?? null,
+          schedule_months:  resolveScheduleMonths(r.schedule),
           color:            edgeColor(r.affected_utility),
           edgeKind:         'acts-on',
           authorityName:    nameOf[r.authority_entity],
@@ -462,6 +473,49 @@
       types.map(t =>
         `<div class="leg-row"><div class="leg-dot" style="background:${nodeColor(t)}"></div> ${t.replace(/_/g, '\u00a0')}</div>`
       ).join('');
+  }
+
+  function applyCalendarFilter(monthIdx) {
+    cy.edges().forEach(edge => {
+      const sm = edge.data('schedule_months');
+      const inactive = monthIdx !== 0 && sm !== null && !sm.includes(monthIdx);
+      edge.toggleClass('phase-inactive', inactive);
+    });
+
+    const rules = expandedData.rules.filter(r => {
+      if (monthIdx === 0) return true;
+      const sm = resolveScheduleMonths(r.schedule);
+      return sm === null || sm.includes(monthIdx);
+    });
+    const netSub = {}, netAff = {};
+    expandedData.entities.forEach(e => { netSub[e.id] = 0; netAff[e.id] = 0; });
+    rules.forEach(r => {
+      netSub[r.subject_entity] += r.subject_utility;
+      if (r.affected_entity != null) netAff[r.affected_entity] += (r.affected_utility ?? 0);
+    });
+    cy.nodes().forEach(node => {
+      const id  = node.id();
+      const net = (netSub[id] ?? 0) + (netAff[id] ?? 0);
+      const base = `${node.data('entityName')}\n(${net > 0 ? '+' : ''}${net})`;
+      node.data('label',       node.hasClass('pinned') ? base + ' 📌' : base);
+      node.data('baseLabel',   base);
+      node.data('netUtility',  net);
+      node.data('borderColor', net > 0 ? '#4ade80' : net < 0 ? '#f87171' : '#6b7280');
+    });
+
+    phaseLabels.querySelectorAll('span').forEach((s, i) => {
+      s.classList.toggle('active-phase', i === monthIdx);
+    });
+  }
+
+  function setupCalendarBar() {
+    phaseBar.hidden = false;
+    phaseSlider.max   = 12;
+    phaseSlider.value = 0;
+    phaseLabels.innerHTML = ['All', ...MONTH_NAMES]
+      .map((m, i) => `<span${i === 0 ? ' class="active-phase"' : ''}>${m}</span>`)
+      .join('');
+    phaseSlider.oninput = e => applyCalendarFilter(Number(e.target.value));
   }
 
   function setupPhaseBar(phases) {
@@ -691,7 +745,9 @@
     });
 
     layout.run();
-    setupPhaseBar(data.phases ?? null);
+    phaseBar.hidden = true;
+    if (data.phases?.length)   setupPhaseBar(data.phases);
+    else if (data.calendar)    setupCalendarBar();
     updateLegendEntities(data.entities);
   }
 
