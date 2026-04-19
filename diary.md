@@ -401,3 +401,16 @@ The calendar vs phases distinction feels architecturally clean — they never mi
 
 **CLAUDE.md recommendations:**
 Schema version in CLAUDE.md is now current (0.6.0). The calendar vs phases distinction is documented. No further changes needed this turn.
+
+---
+
+## 2026-04-19 — Entry 32
+
+**Summary:**
+Two changes this session: bumped dimmed-edge opacity from 0.04 to 0.25 (via 0.15, user wanted more), then built the Command-and-Control Org ruleset. The new org models a traditional hierarchy — Board → CEO → VP Engineering → Eng Manager → Teams, with HR as a cross-cutting authority. 21 rules across four calendar bands: structural always-on (approval gates, prohibition on cross-team contact, HR policy authority), weekly (status meetings, 1:1s, manager-to-VP written reports), monthly (pre-screened all-hands, headcount forecasts, CEO board report), quarterly (goal cascade, perf appraisals, stack ranking), and yearly (comp review, promotions). Introduced a new `person` entity type with amber color (#b45309) for CEO, VP Engineering, and Eng Manager — individual roles vs the team/group types used before. Removed three orphan process entities (quarterly_review, stack_ranking, annual_comp) that couldn't be wired as affected_entity because their parent rules already used @eng_teams in that slot.
+
+**Sentiments:**
+The contrast between Teal and C&C is stark even just reading the utility values. In Teal, most obligations have subject_utility of 0 or -1 but the affected side is often positive (shared benefit). In C&C, nearly every rule affecting engineers is -1 or -2 — the utility concentrates at the top of the chain. The `person` type immediately makes CEO, VP, and Manager stand out visually as individuals in a sea of teams. Stack ranking as a quarterly process (not just annual) was an important modelling decision — it explains why the C&C org has much higher quarterly calendar load than Teal. The board_may_remove_ceo rule (r01) is a nice touch: even the CEO at the top is constrained, which shows up as a negative utility edge landing on the CEO node.
+
+**CLAUDE.md recommendations:**
+None this session — schema is current at 0.6.0, conventions unchanged.
