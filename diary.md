@@ -388,3 +388,16 @@ The first real org model landed well. The phase slider is genuinely useful here 
 
 **CLAUDE.md recommendations:**
 None this turn.
+
+---
+
+## 2026-04-17 — Entry 31
+
+**Summary:**
+Implemented calendar timeline support (schema v0.6.0), replacing the ordinal phase slider with a 12-month calendar slider for org rulesets. The key insight driving this: game phases are ordinal/cyclic (night → day → night), but org rules are anchored to real calendar months — you can't say "we're in phase 3" of a year, you say "it's September." Added `calendar: { unit: "month" }` at ruleset level and `schedule: { months: [...] }` on individual rules. The shorthand `"months": "all"` marks calendar-anchored overhead (monthly all-hands) as distinct from structurally always-on rules (advice model). Visualizer now routes to `setupCalendarBar()` vs `setupPhaseBar()` based on which field is present. Also updated `teal-engineering.json` to v0.6.0: dropped weekly cadences (r09/r10/r11 and their 3 process entities) as noise at the org level, added `schedule.months` to all remaining calendar-anchored rules (biweekly = all, quarterly = [3,6,9,12], yearly salary = [12], elections = [11]). Two commits: one for the feature + ruleset, one for CLAUDE.md docs.
+
+**Sentiments:**
+The calendar vs phases distinction feels architecturally clean — they never mix in a single ruleset, so the renderer can branch simply. The `"months": "all"` shorthand is a nice ergonomic addition; it makes explicit that something *is* calendar-overhead even if it happens every month. Dropping weekly processes was the right call: at the org visualization level, the interesting structure is quarterly OKRs loading up on top of monthly reporting + biweekly syncs. Weekly planning/demo/retro are table-stakes ceremonies, not rule-system insights. The November election scheduling (r20) is a nice detail — it shows the election happens before December salary review, so the new Lead Team composition is known before compensation decisions.
+
+**CLAUDE.md recommendations:**
+Schema version in CLAUDE.md is now current (0.6.0). The calendar vs phases distinction is documented. No further changes needed this turn.
