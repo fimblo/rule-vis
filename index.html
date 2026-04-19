@@ -446,16 +446,23 @@
   const phaseSlider = document.getElementById('phase-slider');
   const phaseLabels = document.getElementById('phase-labels');
   const dimSlider   = document.getElementById('dim-slider');
-  let dimOpacity    = Number(dimSlider.value);
-  let inactiveEdges = new Set();
+  let dimOpacity = Number(dimSlider.value);
 
   function applyDimOpacity() {
+    const sliderVal = Number(phaseSlider.value);
     cy.edges().forEach(edge => {
-      if (inactiveEdges.has(edge.id())) {
-        edge.style('opacity', dimOpacity);
-      } else {
-        edge.removeStyle('opacity');
+      let inactive = false;
+      if (sliderVal !== 0) {
+        const sm = edge.data('schedule_months');
+        const ep = edge.data('phase');
+        if (sm !== null && sm !== undefined) {
+          inactive = !sm.includes(sliderVal);
+        } else if (ep !== null && ep !== undefined && expandedData?.phases) {
+          const active = expandedData.phases[sliderVal - 1];
+          inactive = ep !== active;
+        }
       }
+      edge.style('opacity', inactive ? dimOpacity : 1);
     });
   }
 
@@ -469,12 +476,11 @@
   function applyPhaseFilter(phaseIdx, phases) {
     const active = phaseIdx === 0 ? null : phases[phaseIdx - 1];
 
-    inactiveEdges.clear();
+
     cy.edges().forEach(edge => {
       const ep = edge.data('phase');
       const inactive = active !== null && ep !== null && ep !== active;
       edge.toggleClass('phase-inactive', inactive);
-      if (inactive) inactiveEdges.add(edge.id());
     });
     applyDimOpacity();
 
@@ -515,12 +521,11 @@
   }
 
   function applyCalendarFilter(monthIdx) {
-    inactiveEdges.clear();
+
     cy.edges().forEach(edge => {
       const sm = edge.data('schedule_months');
       const inactive = monthIdx !== 0 && sm !== null && !sm.includes(monthIdx);
       edge.toggleClass('phase-inactive', inactive);
-      if (inactive) inactiveEdges.add(edge.id());
     });
     applyDimOpacity();
 
@@ -787,7 +792,7 @@
     });
 
     layout.run();
-    inactiveEdges.clear();
+
     phaseBar.hidden = true;
     if (data.phases?.length)   setupPhaseBar(data.phases);
     else if (data.calendar)    setupCalendarBar();
