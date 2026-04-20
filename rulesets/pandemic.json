@@ -1,0 +1,239 @@
+{
+  "schema_version": "0.6.0",
+  "ruleset": {
+    "name": "Pandemic (Simplified)",
+    "description": "## Pandemic (Simplified)\n\nCooperative game for 4 players. All players win together or lose together — there is no individual winner.\n\n**Goal:** Discover cures for all 4 diseases before the world is overwhelmed.\n\n**Roles (complementary, not competitive):**\n- *Medic* — removes all disease cubes in a city with one action (normally one at a time)\n- *Scientist* — needs only 4 cards to cure a disease (normally 5)\n- *Researcher* — may give any card to a teammate in the same city (others can only give their current city's card)\n- *Operations Expert* — may build a research station without discarding a city card\n\n**Turn structure (per player):**\n1. *Action phase* — take 4 actions (move, treat, share cards, discover cure, build station)\n2. *Draw phase* — draw 2 player cards; epidemics may be drawn\n3. *Infect phase* — draw infection cards and place disease cubes\n\n**Win:** All 4 diseases cured.\n\n**Lose (any one triggers defeat for the whole team):**\n- 8 outbreaks occur\n- Player deck runs out\n- Any disease runs out of cubes",
+    "source": "Z-Man Games — simplified model for rule-vis"
+  },
+  "phases": ["action", "draw", "infect"],
+  "entities": [
+    { "id": "moderator",        "name": "Rules",             "type": "game_authority", "faction": null },
+    { "id": "medic",            "name": "Medic",             "type": "player",         "faction": "team" },
+    { "id": "scientist",        "name": "Scientist",         "type": "player",         "faction": "team" },
+    { "id": "researcher",       "name": "Researcher",        "type": "player",         "faction": "team" },
+    { "id": "ops_expert",       "name": "Ops Expert",        "type": "player",         "faction": "team" },
+    { "id": "player_deck",      "name": "Player Deck",       "type": "game_component", "faction": null },
+    { "id": "infection_deck",   "name": "Infection Deck",    "type": "game_component", "faction": null },
+    { "id": "outbreak_tracker", "name": "Outbreak Tracker",  "type": "game_component", "faction": null },
+    { "id": "cure_track",       "name": "Cure Track",        "type": "game_component", "faction": null }
+  ],
+  "cohorts": {
+    "all_players": ["medic", "scientist", "researcher", "ops_expert"]
+  },
+  "rules": [
+
+    {
+      "id": "r01",
+      "rule_name": "take_4_actions",
+      "rule_type": "obligation",
+      "phase": "action",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "description": "Each player takes exactly 4 actions on their turn. Actions include: move to an adjacent city, direct flight, charter flight, shuttle flight, build a research station, treat disease (remove one cube), share knowledge, or discover a cure. The 4-action budget is the primary engine of collaboration — players must coordinate to cover the most ground."
+    },
+    {
+      "id": "r02",
+      "rule_name": "treat_disease",
+      "rule_type": "permission",
+      "phase": "action",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "infection_deck",
+      "affected_utility": 0,
+      "description": "Any player may spend one action to remove one disease cube from their current city. Treating disease slows the spread and prevents outbreaks, but costs a precious action."
+    },
+    {
+      "id": "r03",
+      "rule_name": "share_knowledge",
+      "rule_type": "permission",
+      "phase": "action",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "description": "A player may give or take a city card from a teammate, but only if both players are in the city matching the card. One action spent, one card transferred. This constraint forces players to physically meet — a key source of collaborative tension and planning."
+    },
+    {
+      "id": "r04",
+      "rule_name": "discover_cure",
+      "rule_type": "permission",
+      "phase": "action",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": 3,
+      "affected_entity": "cure_track",
+      "affected_utility": 1,
+      "description": "At a research station, a player may spend one action and discard 5 city cards of the same colour to discover a cure. Curing a disease is the primary win condition and requires the whole team to funnel the right cards to the right player."
+    },
+    {
+      "id": "r05",
+      "rule_name": "build_research_station",
+      "rule_type": "permission",
+      "phase": "action",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "description": "Any player may spend one action and discard their current city card to build a research station there. Research stations enable cures and fast travel — placing them well is a team decision."
+    },
+
+    {
+      "id": "r06",
+      "rule_name": "medic_clears_all_cubes",
+      "rule_type": "permission",
+      "phase": "action",
+      "authority_entity": "moderator",
+      "subject_entity": "medic",
+      "authority_utility": 0,
+      "subject_utility": 2,
+      "affected_entity": "infection_deck",
+      "affected_utility": 1,
+      "description": "The Medic removes all disease cubes of one colour from their current city with a single action, instead of one cube per action. The Medic also automatically removes cubes from their city when a cure is discovered. This makes the Medic disproportionately effective at containment."
+    },
+    {
+      "id": "r07",
+      "rule_name": "scientist_cures_with_4_cards",
+      "rule_type": "permission",
+      "phase": "action",
+      "authority_entity": "moderator",
+      "subject_entity": "scientist",
+      "authority_utility": 0,
+      "subject_utility": 2,
+      "affected_entity": "cure_track",
+      "affected_utility": 1,
+      "description": "The Scientist needs only 4 matching city cards (instead of 5) to discover a cure. This significantly reduces the card-collection burden on the team and often determines which disease is cured first."
+    },
+    {
+      "id": "r08",
+      "rule_name": "researcher_shares_any_card",
+      "rule_type": "permission",
+      "phase": "action",
+      "authority_entity": "moderator",
+      "subject_entity": "researcher",
+      "authority_utility": 0,
+      "subject_utility": 2,
+      "affected_entity": "@all_players",
+      "affected_utility": 1,
+      "description": "The Researcher may give any city card from their hand to a teammate in the same city — not just the card matching their current city. This removes a major constraint on card flow and makes the Researcher a critical hub for assembling cure sets."
+    },
+    {
+      "id": "r09",
+      "rule_name": "ops_expert_free_station",
+      "rule_type": "permission",
+      "phase": "action",
+      "authority_entity": "moderator",
+      "subject_entity": "ops_expert",
+      "authority_utility": 0,
+      "subject_utility": 2,
+      "description": "The Operations Expert may build a research station in their current city without discarding a city card. They may also move from a research station to any city by discarding any city card. This gives the team far more flexibility in where cures can be discovered."
+    },
+
+    {
+      "id": "r10",
+      "rule_name": "draw_player_cards",
+      "rule_type": "obligation",
+      "phase": "draw",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": 1,
+      "affected_entity": "player_deck",
+      "affected_utility": -1,
+      "description": "After their actions, the active player draws 2 cards from the player deck. Cards are city cards (useful for cures and travel) or Epidemic cards. Drawing is necessary to collect cards for cures, but depleting the deck is one of three loss conditions."
+    },
+    {
+      "id": "r11",
+      "rule_name": "epidemic_card",
+      "rule_type": "obligation",
+      "phase": "draw",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": -2,
+      "affected_entity": "infection_deck",
+      "affected_utility": -2,
+      "description": "When an Epidemic card is drawn, three things happen immediately: (1) the infection rate increases, (2) a new city is infected with 3 cubes, (3) the infection discard pile is shuffled and placed on top — guaranteeing recently infected cities will be hit again soon. Epidemics are the sharpest collective setback in the game."
+    },
+
+    {
+      "id": "r12",
+      "rule_name": "infect_cities",
+      "rule_type": "obligation",
+      "phase": "infect",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": -2,
+      "affected_entity": "infection_deck",
+      "affected_utility": -1,
+      "description": "At the end of every turn, the active player draws infection cards equal to the current infection rate and places one disease cube on each named city. If a city already has 3 cubes and would receive another, an outbreak occurs instead. The infection phase is an unavoidable collective cost paid every turn."
+    },
+    {
+      "id": "r13",
+      "rule_name": "outbreak_cascade",
+      "rule_type": "obligation",
+      "phase": "infect",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": -2,
+      "affected_entity": "outbreak_tracker",
+      "affected_utility": -1,
+      "description": "When a city with 3 disease cubes would receive a 4th cube, an outbreak occurs: the outbreak tracker advances by 1 and each neighbouring city receives one cube. Neighbours with 3 cubes also outbreak in a chain reaction. Outbreaks are catastrophic and collective — the team shares the consequences."
+    },
+
+    {
+      "id": "r14",
+      "rule_name": "collective_win",
+      "rule_type": "permission",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": 3,
+      "affected_entity": "cure_track",
+      "affected_utility": 0,
+      "description": "The entire team wins immediately when all 4 diseases have been cured. There is no individual winner — all players win or all players lose. This is the only win condition."
+    },
+    {
+      "id": "r15",
+      "rule_name": "lose_on_8_outbreaks",
+      "rule_type": "obligation",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": -3,
+      "affected_entity": "outbreak_tracker",
+      "affected_utility": 0,
+      "description": "The entire team loses immediately when the outbreak tracker reaches 8. Outbreaks cascade and compound — a single poorly contained epidemic can wipe out the game in one turn."
+    },
+    {
+      "id": "r16",
+      "rule_name": "lose_on_empty_player_deck",
+      "rule_type": "obligation",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": -3,
+      "affected_entity": "player_deck",
+      "affected_utility": 0,
+      "description": "The entire team loses immediately if a player must draw from an empty player deck. This creates a hard time limit on the game — the team must cure all 4 diseases before the deck runs out."
+    },
+    {
+      "id": "r17",
+      "rule_name": "lose_on_no_disease_cubes",
+      "rule_type": "obligation",
+      "authority_entity": "moderator",
+      "subject_entity": "@all_players",
+      "authority_utility": 0,
+      "subject_utility": -3,
+      "affected_entity": "infection_deck",
+      "affected_utility": 0,
+      "description": "The entire team loses immediately if a disease cube of any colour must be placed but none remain in the supply. Each colour has only 24 cubes — if unchecked spread exhausts the supply, the game ends in defeat."
+    }
+  ]
+}
