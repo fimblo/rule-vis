@@ -440,3 +440,16 @@ The false alarm was instructive. The user saw "some edges responding" and assume
 
 **CLAUDE.md recommendations:**
 Two things: (1) Ask user for console data after first failed fix attempt, not later. (2) When a user reports unexpected behaviour, double-check their assumptions first — ask a targeted question (e.g. "what month/phase is selected?") before assuming the code is wrong.
+
+---
+
+## 2026-04-20 — Entry 35
+
+**Summary:**
+Trimmed CLAUDE.md from 93 to 44 lines. Removed: project status section (goes stale quickly, rulesets/ is self-documenting), Two Planned Components section (folded into one intro sentence), rule/entity code blocks (redundant with the field roles prose), GitHub Pages deployment note (lives in the workflow file), target use cases bullet list (obvious from rulesets), and aspirational/obvious design decisions ("Backus-Naur", "entities can be rules"). Kept: schema documentation, naming convention, diary rules, dev conventions, and the two non-obvious design decisions.
+
+**Sentiments:**
+44 lines is well under the 80-line target. The schema section actually got slightly longer (added the cohort two-cohort caveat about unresolved acts-on edges) because that's genuinely non-obvious from reading the code. Worth the lines.
+
+**CLAUDE.md recommendations:**
+None — we just rewrote it.
