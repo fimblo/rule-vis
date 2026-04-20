@@ -453,3 +453,18 @@ Trimmed CLAUDE.md from 93 to 44 lines. Removed: project status section (goes sta
 
 **CLAUDE.md recommendations:**
 None — we just rewrote it.
+
+## 2026-04-19 — Entry 36
+
+**Summary:**
+Context ran out mid-session and was resumed from summary. The pandemic.json file had been fully authored in the previous portion but not yet wired in. This turn: added Pandemic (Simplified) to the RULESETS array in index.html and committed both files.
+
+The ruleset models a 4-player cooperative game with 17 rules across 3 phases (action/draw/infect). Notable design choices: all 4 player roles have a `faction: "team"` — there is no opposing faction. Loss conditions use obligation rules with `subject_utility: -3`. Cohort `all_players` expands most rules across all 4 roles.
+
+**Sentiments:**
+The collaborative-game framing was a good stress test of the schema. A game with no opposing factions still maps cleanly: the "antagonist" is modelled as game mechanics (epidemic cards, infection phase) with negative subject_utility, rather than as an entity with its own faction. This is a useful precedent for future rulesets.
+
+Resumed from summary cleanly with no wasted cycles — the summary had enough detail to pick up exactly where we left off.
+
+**CLAUDE.md recommendations:**
+None.
